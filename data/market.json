@@ -1,0 +1,16 @@
+[
+  {
+    "id": "m1",
+    "title": "Profesyonel Mikrofon",
+    "price": "2.750 TL",
+    "location": "İstanbul",
+    "image": "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "id": "m2",
+    "title": "Video Işık Seti",
+    "price": "1.450 TL",
+    "location": "Ankara",
+    "image": "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=80"
+  }
+]

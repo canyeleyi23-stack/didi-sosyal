@@ -1,10 +1,10 @@
 [
   {
-    "id": "7ae06150-b988-41c6-99c9-19247500ad46",
+    "id": "c2b91446-ce57-4f0f-b354-20b183e0949d",
     "name": "DİDİ Sahibi",
     "username": "@owner",
     "email": "owner@didi.local",
-    "password": "$2a$10$Tva9yaCzXSO/kdXHtrGZK.5ecak2NyJTH2VBmbwQtWCig.5P4otnm",
+    "password": "$2a$10$bSFCsvRWh23gITJ/IL7Du.zERKMq.5PiC5zVJEVTpCPSVaimPJiVa",
     "role": "OWNER",
     "active": true,
     "verified": true,

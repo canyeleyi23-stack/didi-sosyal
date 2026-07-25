@@ -1,0 +1,23 @@
+[
+  {
+    "id": "g1",
+    "name": "DİDİ Teknoloji",
+    "initials": "DT",
+    "members": 245,
+    "memberIds": []
+  },
+  {
+    "id": "g2",
+    "name": "DİDİ TV Topluluğu",
+    "initials": "TV",
+    "members": 418,
+    "memberIds": []
+  },
+  {
+    "id": "g3",
+    "name": "İçerik Üreticileri",
+    "initials": "İÜ",
+    "members": 172,
+    "memberIds": []
+  }
+]

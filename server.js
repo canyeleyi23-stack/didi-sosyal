@@ -12,6 +12,9 @@ const USERS=path.join(DATA,"users.json");
 const POSTS=path.join(DATA,"posts.json");
 const MESSAGES=path.join(DATA,"messages.json");
 const NOTIFICATIONS=path.join(DATA,"notifications.json");
+const STORIES=path.join(DATA,"stories.json");
+const GROUPS=path.join(DATA,"groups.json");
+const MARKET=path.join(DATA,"market.json");
 
 app.use(express.json({limit:"120mb"}));
 app.use(express.urlencoded({extended:true,limit:"120mb"}));
@@ -41,10 +44,20 @@ function seed(){
   ]);
   if(!fs.existsSync(MESSAGES))write(MESSAGES,[]);
   if(!fs.existsSync(NOTIFICATIONS))write(NOTIFICATIONS,[]);
+  if(!fs.existsSync(STORIES))write(STORIES,[]);
+  if(!fs.existsSync(GROUPS))write(GROUPS,[
+    {id:"g1",name:"DİDİ Teknoloji",initials:"DT",members:245,memberIds:[]},
+    {id:"g2",name:"DİDİ TV Topluluğu",initials:"TV",members:418,memberIds:[]},
+    {id:"g3",name:"İçerik Üreticileri",initials:"İÜ",members:172,memberIds:[]}
+  ]);
+  if(!fs.existsSync(MARKET))write(MARKET,[
+    {id:"m1",title:"Profesyonel Mikrofon",price:"2.750 TL",location:"İstanbul",image:"https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=900&q=80"},
+    {id:"m2",title:"Video Işık Seti",price:"1.450 TL",location:"Ankara",image:"https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=80"}
+  ]);
 }
 seed();
 
-app.get("/api/health",(_q,r)=>r.json({ok:true,name:"DİDİ Sosyal Pro",version:"9.0.0"}));
+app.get("/api/health",(_q,r)=>r.json({ok:true,name:"DİDİ Sosyal Pro",version:"10.0.0"}));
 app.post("/api/auth/register",async(req,res)=>{
   const name=String(req.body.name||"").trim(), username="@"+String(req.body.username||"").replace(/^@/,"").replace(/\s+/g,"").toLowerCase(), email=String(req.body.email||"").trim().toLowerCase(), password=String(req.body.password||"");
   if(!name||username==="@"||!email||password.length<6)return res.status(400).json({ok:false,message:"Bilgileri eksiksiz doldurun."});
@@ -83,9 +96,44 @@ app.get("/api/messages",auth,(req,res)=>{const all=read(MESSAGES,[]).filter(x=>x
 app.post("/api/messages",auth,(req,res)=>{const users=read(USERS,[]),target=users.find(x=>x.username===String(req.body.to||""));if(!target)return res.status(404).json({ok:false,message:"Alıcı bulunamadı."});const all=read(MESSAGES,[]);all.unshift({id:id(),fromId:req.user.id,toId:target.id,fromName:req.user.username,toName:target.username,text:String(req.body.text||"").slice(0,1000),time:now(),read:false});write(MESSAGES,all);addNotification(target.id,"Yeni mesaj",`${req.user.name} size mesaj gönderdi.`);res.json({ok:true})});
 app.get("/api/badges",auth,(req,res)=>{const n=read(NOTIFICATIONS,[]).filter(x=>x.userId===req.user.id&&!x.read).length,m=read(MESSAGES,[]).filter(x=>x.toId===req.user.id&&!x.read).length;res.json({ok:true,notifications:n,messages:m})});
 
+
+app.put("/api/account/password",auth,async(req,res)=>{
+  const users=read(USERS,[]),u=users.find(x=>x.id===req.user.id);
+  if(!(await bcrypt.compare(String(req.body.oldPassword||""),u.password)))return res.status(400).json({ok:false,message:"Mevcut şifre yanlış."});
+  const next=String(req.body.newPassword||"");
+  if(next.length<6)return res.status(400).json({ok:false,message:"Yeni şifre en az 6 karakter olmalı."});
+  u.password=await bcrypt.hash(next,10);write(USERS,users);res.json({ok:true});
+});
+app.get("/api/saved",auth,(req,res)=>{
+  const ids=req.user.saved||[],all=read(POSTS,[]);
+  const posts=all.filter(p=>ids.includes(p.id)).map(p=>({...p,likes:(p.likesBy||[]).length,liked:(p.likesBy||[]).includes(req.user.id),saved:true,owner:p.userId===req.user.id||["OWNER","ADMIN"].includes(req.user.role)}));
+  res.json({ok:true,posts});
+});
+app.get("/api/reels",auth,(req,res)=>{
+  const posts=read(POSTS,[]).filter(p=>p.media&&p.media.type==="video").map(p=>({id:p.id,src:p.media.src,name:p.name,username:p.user,text:p.text}));
+  res.json({ok:true,reels:posts});
+});
+app.get("/api/stories",auth,(req,res)=>{
+  const cutoff=Date.now()-24*60*60*1000;
+  let all=read(STORIES,[]).filter(s=>s.createdAt>cutoff);write(STORIES,all);
+  res.json({ok:true,stories:all});
+});
+app.post("/api/stories",auth,(req,res)=>{
+  const src=String(req.body.src||"");if(!src.startsWith("data:"))return res.status(400).json({ok:false,message:"Hikâye medyası geçersiz."});
+  const all=read(STORIES,[]);all.unshift({id:id(),userId:req.user.id,name:req.user.name,initials:req.user.name.split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase(),type:req.body.type==="video"?"video":"image",src,createdAt:Date.now()});write(STORIES,all.slice(0,200));res.json({ok:true});
+});
+app.get("/api/groups",auth,(req,res)=>{
+  const groups=read(GROUPS,[]).map(g=>({...g,joined:(g.memberIds||[]).includes(req.user.id)}));res.json({ok:true,groups});
+});
+app.post("/api/groups/:id/join",auth,(req,res)=>{
+  const groups=read(GROUPS,[]),g=groups.find(x=>x.id===req.params.id);if(!g)return res.status(404).json({ok:false,message:"Grup bulunamadı."});
+  g.memberIds=g.memberIds||[];const i=g.memberIds.indexOf(req.user.id);i>=0?g.memberIds.splice(i,1):g.memberIds.push(req.user.id);g.members=Math.max(0,(g.members||0)+(i>=0?-1:1));write(GROUPS,groups);res.json({ok:true,joined:i<0});
+});
+app.get("/api/market",auth,(req,res)=>res.json({ok:true,items:read(MARKET,[])}));
+
 app.get("/api/admin",auth,admin,(req,res)=>{const users=read(USERS,[]),posts=read(POSTS,[]),messages=read(MESSAGES,[]);res.json({ok:true,stats:{"Üyeler":users.length,"Gönderiler":posts.length,"Mesajlar":messages.length,"Aktif kullanıcı":users.filter(x=>x.active).length},users:users.map(safeUser)})});
 app.post("/api/admin/users/:id/toggle",auth,admin,(req,res)=>{const users=read(USERS,[]),u=users.find(x=>x.id===req.params.id);if(!u)return res.status(404).json({ok:false,message:"Kullanıcı bulunamadı."});if(u.role==="OWNER")return res.status(400).json({ok:false,message:"Sahip hesabı kapatılamaz."});u.active=!u.active;write(USERS,users);res.json({ok:true})});
 
 app.get("*",(_q,r)=>r.sendFile(path.join(__dirname,"public","index.html")));
 app.use((e,_q,r,_n)=>r.status(500).json({ok:false,message:e.message||"Sunucu hatası"}));
-app.listen(PORT,"0.0.0.0",()=>console.log(`DİDİ Sosyal Pro 9.0: http://localhost:${PORT}`));
+app.listen(PORT,"0.0.0.0",()=>console.log(`DİDİ Sosyal Pro 10.0: http://localhost:${PORT}`));

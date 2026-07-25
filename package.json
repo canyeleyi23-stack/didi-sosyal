@@ -1,6 +1,6 @@
 {
   "name": "didi-sosyal-pro",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "private": true,
   "description": "DİDİ Sosyal Pro - gelişmiş üyelik, mesaj, bildirim ve yönetim sistemi",
   "main": "server.js",
