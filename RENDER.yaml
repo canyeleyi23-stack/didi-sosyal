@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: didi-sosyal
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start

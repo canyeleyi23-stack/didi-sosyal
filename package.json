@@ -1,0 +1,13 @@
+{
+  "name": "didi-sosyal-pro",
+  "version": "8.0.0",
+  "private": true,
+  "description": "Gönderilen tasarımla aynı görünüme sahip DİDİ Sosyal Pro",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

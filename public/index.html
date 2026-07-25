@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DİDİ Sosyal Pro 8.0</title>
+<style>
+:root{
+  --bg:#eef3ff;--panel:#fff;--panel2:#f6f8ff;--text:#101828;--muted:#667085;
+  --line:#dfe5f3;--brand:#2563eb;--brand2:#7c3aed;--shadow:0 8px 24px rgba(37,99,235,.10)
+}
+html[data-theme="dark"]{
+  --bg:#06101f;--panel:#0b1728;--panel2:#101d31;--text:#f7f9ff;--muted:#9ca9bd;
+  --line:#20324c;--brand:#2f7cff;--brand2:#7c3aed;--shadow:0 10px 28px rgba(0,0,0,.34)
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Arial,sans-serif}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.topbar{
+  height:64px;position:sticky;top:0;z-index:50;display:grid;
+  grid-template-columns:230px minmax(240px,620px) 1fr;gap:18px;align-items:center;
+  padding:0 22px;background:var(--panel);border-bottom:1px solid var(--line)
+}
+.brand{display:flex;align-items:center;gap:11px;font-size:22px;font-weight:900;color:var(--text);white-space:nowrap}
+.brand-name span{background:linear-gradient(90deg,#1683ff,#7c3aed);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand-mark{width:46px;height:46px;display:grid;place-items:center;filter:drop-shadow(0 7px 14px rgba(62,92,255,.32))}
+.brand-mark svg{width:46px;height:46px;display:block}
+.brand-mark .logo-dots circle{animation:logoPulse 2.4s ease-in-out infinite}
+.brand-mark .logo-dots circle:nth-child(2){animation-delay:.18s}.brand-mark .logo-dots circle:nth-child(3){animation-delay:.36s}
+@keyframes logoPulse{0%,100%{opacity:.65}50%{opacity:1}}
+.search{position:relative}
+.search input{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:999px;padding:11px 18px 11px 42px;outline:none}
+.search span{position:absolute;left:15px;top:10px}
+.top-actions{display:flex;justify-content:flex-end;gap:9px}
+.icon-btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:11px;padding:10px 13px}
+.layout{max-width:1440px;margin:auto;display:grid;grid-template-columns:230px minmax(0,680px) 310px;gap:22px;padding:22px}
+.left,.right{position:sticky;top:86px;height:max-content}
+.menu,.card,.composer,.post{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:18px}
+.menu{padding:10px}
+.menu a{display:flex;align-items:center;gap:13px;text-decoration:none;color:var(--text);font-weight:650;padding:12px 14px;border-radius:12px;margin:2px 0}
+.menu a:hover,.menu a.active{background:color-mix(in srgb,var(--brand) 12%,transparent);color:var(--brand)}
+.profile-mini{padding:16px;margin-top:16px;display:flex;gap:12px;align-items:center}
+.avatar{width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,#1683ff,#7c3aed);display:grid;place-items:center;color:white;font-weight:900;flex:0 0 auto}
+.small{font-size:13px;color:var(--muted)}
+.stories{display:flex;gap:12px;overflow:auto;padding:3px 2px 15px}
+.story{min-width:104px;height:164px;border-radius:18px;position:relative;overflow:hidden;background:linear-gradient(160deg,#344054,#101828);border:1px solid var(--line)}
+.story:nth-child(2n){background:linear-gradient(160deg,#2563eb,#7c3aed)}
+.story:nth-child(3n){background:linear-gradient(160deg,#0086c9,#00a76f)}
+.story .avatar{position:absolute;top:10px;left:10px;width:37px;height:37px;border:3px solid var(--brand)}
+.story-name{position:absolute;bottom:10px;left:10px;right:8px;color:white;font-size:13px;font-weight:700}
+.composer{padding:17px;margin-bottom:18px}
+.composer-top{display:flex;gap:12px}
+.composer textarea{width:100%;height:78px;resize:none;border:none;background:var(--panel2);color:var(--text);border-radius:15px;padding:14px;outline:none}
+.composer-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.tool{border:0;background:var(--panel2);color:var(--text);border-radius:10px;padding:9px 11px}
+.publish{margin-left:auto;border:0;background:var(--brand);color:white;font-weight:750;border-radius:10px;padding:10px 18px}
+.publish:hover{background:var(--brand2)}
+.preview{display:none;margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:10px}
+.preview img,.preview video{max-width:100%;max-height:360px;border-radius:11px;display:block;margin:auto}
+.youtube-preview iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:11px}
+.notice{font-size:13px;color:var(--muted);margin-top:8px}
+.post{margin-bottom:18px;overflow:hidden}
+.post-head{display:flex;gap:11px;align-items:center;padding:16px}
+.post-head .more{margin-left:auto;border:0;background:transparent;color:var(--muted);font-size:20px}
+.post-body{padding:0 16px 14px;line-height:1.55;white-space:pre-wrap}
+.post-media img,.post-media video{display:block;width:100%;max-height:520px;object-fit:cover;background:#000}
+.post-media iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+.post-stats{display:flex;justify-content:space-between;padding:12px 16px;color:var(--muted);font-size:13px;border-bottom:1px solid var(--line)}
+.post-actions{display:grid;grid-template-columns:repeat(4,1fr);padding:6px}
+.post-actions button{border:0;background:transparent;color:var(--muted);padding:10px 6px;border-radius:9px}
+.post-actions button:hover,.post-actions button.liked{background:var(--panel2);color:var(--brand)}
+.card{padding:17px;margin-bottom:16px}
+.card h3{margin:0 0 14px}
+.trend{padding:11px 0;border-bottom:1px solid var(--line)}
+.trend:last-child{border:0}
+.follow{display:flex;align-items:center;gap:10px;margin:13px 0}
+.follow button{margin-left:auto;border:1px solid var(--brand);background:transparent;color:var(--brand);border-radius:9px;padding:7px 10px;font-weight:700}
+.badge{color:#1570ef}
+.toast{position:fixed;right:22px;bottom:22px;z-index:99;background:#101828;color:#fff;padding:12px 16px;border-radius:11px;opacity:0;transform:translateY(12px);transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+.hidden{display:none!important}
+@media(max-width:1100px){.layout{grid-template-columns:210px minmax(0,1fr)}.right{display:none}.topbar{grid-template-columns:210px 1fr auto}}
+@media(max-width:760px){
+ .topbar{grid-template-columns:1fr auto;padding:0 12px}.search{display:none}.layout{display:block;padding:12px}.left{display:none}
+ .stories{margin-top:3px}.post-actions button span{display:none}.composer{border-radius:14px}.top-actions .hide-mobile{display:none}
+}
+
+/* AŞAMA 2 */
+.comment-box{display:none;padding:14px 16px;border-top:1px solid var(--line);background:var(--panel2)}
+.comment-box.open{display:block}
+.comment-form{display:flex;gap:8px}
+.comment-form input{flex:1;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;padding:10px 12px;outline:none}
+.comment-form button,.modal-save{border:0;background:var(--brand);color:#fff;border-radius:10px;padding:10px 14px;font-weight:700}
+.comment-list{margin-top:12px;display:grid;gap:10px}
+.comment{display:flex;gap:9px}
+.comment .avatar{width:34px;height:34px;font-size:12px}
+.comment-content{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 11px;flex:1}
+.comment-content p{margin:4px 0 0;white-space:pre-wrap}
+.comment-tools{display:flex;gap:8px;margin-top:5px}
+.comment-tools button{border:0;background:transparent;color:var(--muted);font-size:12px;padding:0}
+.owner-menu{position:relative;margin-left:auto}
+.owner-menu-box{display:none;position:absolute;right:0;top:34px;z-index:10;width:150px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:11px;padding:6px}
+.owner-menu-box.open{display:block}
+.owner-menu-box button{display:block;width:100%;border:0;background:transparent;color:var(--text);text-align:left;padding:9px;border-radius:8px}
+.owner-menu-box button:hover{background:var(--panel2)}
+.danger{color:#d92d20!important}
+.modal-backdrop{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.58);padding:18px;overflow:auto}
+.modal-backdrop.open{display:grid;place-items:center}
+.modal{width:min(620px,100%);background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+.modal-head h2{margin:0;font-size:19px}
+.modal-close{border:0;background:var(--panel2);color:var(--text);width:36px;height:36px;border-radius:10px}
+.modal-body{padding:18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:grid;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-size:13px;color:var(--muted);font-weight:650}
+.field input,.field textarea{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:10px;padding:11px;outline:none}
+.field textarea{min-height:90px;resize:vertical}
+.profile-cover{height:150px;background:linear-gradient(135deg,#1683ff,#7c3aed);position:relative}
+.profile-avatar-large{position:absolute;left:22px;bottom:-42px;width:88px;height:88px;border-radius:50%;border:5px solid var(--panel);background:linear-gradient(135deg,#1683ff,#7c3aed);display:grid;place-items:center;color:#fff;font-size:24px;font-weight:900}
+.profile-content{padding:54px 22px 22px}
+.profile-topline{display:flex;justify-content:space-between;gap:12px}
+.profile-stats{display:flex;gap:25px;margin-top:18px}
+.profile-stats b{display:block}
+.profile-tabs{display:flex;gap:8px;margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
+.profile-tabs button{border:0;background:var(--panel2);color:var(--text);padding:9px 12px;border-radius:9px}
+.edit-post-area{width:100%;min-height:130px;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;padding:12px;resize:vertical}
+@media(max-width:560px){.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark" aria-label="DİDİ Sosyal logosu">
+      <svg viewBox="0 0 64 64" role="img" aria-hidden="true">
+        <defs>
+          <linearGradient id="didiLogoGradient" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#0ea5ff"/><stop offset=".52" stop-color="#2563eb"/><stop offset="1" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+        <circle cx="32" cy="29" r="23" fill="url(#didiLogoGradient)"/>
+        <path d="M16 43.5 12.5 55 24 49.3A23 23 0 0 0 55 29C55 16.3 44.7 6 32 6S9 16.3 9 29c0 5.5 1.9 10.5 5.1 14.5Z" fill="url(#didiLogoGradient)"/>
+        <path d="M23 17h11.2c9.1 0 15.8 5 15.8 12.2S43.3 41.5 34.2 41.5H23V17Zm9.7 7.2v10.1h2c4.5 0 7.3-1.8 7.3-5.1s-2.8-5-7.3-5h-2Z" fill="#fff"/>
+        <g class="logo-dots" fill="#fff"><circle cx="27" cy="36.6" r="1.8"/><circle cx="32" cy="36.6" r="1.8"/><circle cx="37" cy="36.6" r="1.8"/></g>
+        <g fill="#1683ff"><circle cx="12" cy="15" r="2.2"/><circle cx="22" cy="7" r="2"/></g>
+        <g fill="#7c3aed"><circle cx="52" cy="13" r="2.2"/><circle cx="57" cy="24" r="2"/></g>
+        <path d="M13 15 22 7M22 7l12 2M43 8l9 5M52 13l5 11" stroke="#2f7cff" stroke-width="1.2" opacity=".8"/>
+      </svg>
+    </div>
+    <div class="brand-name">DİDİ <span>Sosyal</span></div>
+  </div>
+  <div class="search"><span>🔎</span><input id="searchInput" placeholder="Kişi, gönderi veya etiket ara"></div>
+  <div class="top-actions">
+    <button class="icon-btn hide-mobile" title="Mesajlar">💬</button>
+    <button class="icon-btn hide-mobile" title="Bildirimler">🔔</button>
+    <button class="icon-btn" id="themeBtn" title="Temayı değiştir">🌙</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="left">
+    <nav class="menu">
+      <a class="active" href="#">🏠 Ana Sayfa</a>
+      <a href="#">🔥 Keşfet</a>
+      <a href="#">🎬 Reels</a>
+      <a href="#">📺 Video</a>
+      <a href="#">💬 Mesajlar</a>
+      <a href="#">🔔 Bildirimler</a>
+      <a href="#">👥 Gruplar</a>
+      <a href="#">🛒 Marketplace</a>
+      <a href="#" id="profileOpen">👤 Profil</a>
+      <a href="#">⚙️ Ayarlar</a>
+    </nav>
+    <div class="menu profile-mini">
+      <div class="avatar">MS</div>
+      <div><b>Mehmet Sait</b><div class="small">@mehmetsait</div></div>
+    </div>
+  </aside>
+
+  <main>
+    <section class="stories">
+      <div class="story"><div class="avatar">+</div><div class="story-name">Hikâye ekle</div></div>
+      <div class="story"><div class="avatar">AY</div><div class="story-name">Ayşe Yılmaz</div></div>
+      <div class="story"><div class="avatar">BK</div><div class="story-name">Burak Kaya</div></div>
+      <div class="story"><div class="avatar">D</div><div class="story-name">DİDİ Haber</div></div>
+      <div class="story"><div class="avatar">SK</div><div class="story-name">Selin Koç</div></div>
+    </section>
+
+    <section class="composer">
+      <div class="composer-top">
+        <div class="avatar">MS</div>
+        <textarea id="postText" maxlength="2000" placeholder="Ne düşünüyorsun?"></textarea>
+      </div>
+      <div id="mediaPreview" class="preview"></div>
+      <div class="composer-tools">
+        <input id="imageInput" type="file" accept="image/*" hidden>
+        <input id="videoInput" type="file" accept="video/*" hidden>
+        <button class="tool" id="imageBtn">🖼️ Fotoğraf</button>
+        <button class="tool" id="videoBtn">🎥 Video</button>
+        <button class="tool" id="youtubeBtn">▶️ YouTube</button>
+        <button class="tool">📊 Anket</button>
+        <button class="tool">😊 His</button>
+        <button class="publish" id="publishBtn">Paylaş</button>
+      </div>
+      <div class="notice">Video süresi en fazla 5 dakika olabilir.</div>
+    </section>
+
+    <div id="feed"></div>
+  </main>
+
+  <aside class="right">
+    <section class="card">
+      <h3>Gündem</h3>
+      <div class="trend"><div class="small">Türkiye gündemi</div><b>#DİDİSocial</b><div class="small">12,8 B gönderi</div></div>
+      <div class="trend"><div class="small">Teknoloji</div><b>#YapayZekâ</b><div class="small">8,4 B gönderi</div></div>
+      <div class="trend"><div class="small">Medya</div><b>#DİDİTV</b><div class="small">4,1 B gönderi</div></div>
+    </section>
+    <section class="card">
+      <h3>Takip önerileri</h3>
+      <div class="follow"><div class="avatar">DH</div><div><b>DİDİ Haber <span class="badge">●</span></b><div class="small">@didihaber</div></div><button>Takip</button></div>
+      <div class="follow"><div class="avatar">DT</div><div><b>DİDİ TV <span class="badge">●</span></b><div class="small">@diditv</div></div><button>Takip</button></div>
+      <div class="follow"><div class="avatar">DA</div><div><b>DİDİ AI</b><div class="small">@didiai</div></div><button>Takip</button></div>
+    </section>
+    <section class="card">
+      <div class="small">© 2026 DİDİ Sosyal · Gizlilik · Koşullar · Yardım</div>
+    </section>
+  </aside>
+</div>
+<div id="toast" class="toast"></div>
+
+<div id="profileModal" class="modal-backdrop">
+  <section class="modal">
+    <div class="modal-head"><h2>Profil</h2><button class="modal-close" data-close="profileModal">✕</button></div>
+    <div class="profile-cover">
+      <div id="profileAvatarLarge" class="profile-avatar-large">MS</div>
+    </div>
+    <div class="profile-content">
+      <div class="profile-topline">
+        <div><h2 id="profileNameView" style="margin:0">Mehmet Sait</h2><div id="profileUserView" class="small">@mehmetsait</div></div>
+        <button class="modal-save" id="editProfileBtn">Profili Düzenle</button>
+      </div>
+      <p id="profileBioView">DİDİ ekosistemi geliştiricisi ve içerik üreticisi.</p>
+      <div class="small" id="profileLocationView">📍 Türkiye</div>
+      <div class="profile-stats">
+        <div><b id="postCount">0</b><span class="small">Gönderi</span></div>
+        <div><b>128</b><span class="small">Takipçi</span></div>
+        <div><b>94</b><span class="small">Takip</span></div>
+      </div>
+      <div class="profile-tabs"><button>Gönderiler</button><button>Medya</button><button>Beğeniler</button></div>
+    </div>
+  </section>
+</div>
+
+<div id="profileEditModal" class="modal-backdrop">
+  <section class="modal">
+    <div class="modal-head"><h2>Profili Düzenle</h2><button class="modal-close" data-close="profileEditModal">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field"><label>Ad Soyad</label><input id="editName"></div>
+        <div class="field"><label>Kullanıcı adı</label><input id="editUsername"></div>
+        <div class="field full"><label>Biyografi</label><textarea id="editBio"></textarea></div>
+        <div class="field full"><label>Konum</label><input id="editLocation"></div>
+      </div>
+      <button class="modal-save" id="saveProfileBtn" style="margin-top:15px;width:100%">Kaydet</button>
+    </div>
+  </section>
+</div>
+
+<div id="editPostModal" class="modal-backdrop">
+  <section class="modal">
+    <div class="modal-head"><h2>Gönderiyi Düzenle</h2><button class="modal-close" data-close="editPostModal">✕</button></div>
+    <div class="modal-body">
+      <textarea id="editPostText" class="edit-post-area"></textarea>
+      <button class="modal-save" id="savePostEditBtn" style="margin-top:12px;width:100%">Değişiklikleri Kaydet</button>
+    </div>
+  </section>
+</div>
+
+
+
+<script>
+const $=s=>document.querySelector(s);
+const $$=s=>document.querySelectorAll(s);
+const feed=$("#feed"), toast=$("#toast");
+let selectedMedia=null, editingPostId=null;
+
+const DEFAULT_PROFILE={
+  name:"Mehmet Sait",username:"@mehmetsait",initials:"MS",
+  bio:"DİDİ ekosistemi geliştiricisi ve içerik üreticisi.",location:"Türkiye"
+};
+let profile={...DEFAULT_PROFILE};
+
+const starterPosts=[
+ {id:"starter-1",owner:false,name:"DİDİ Sosyal",user:"@didisocial",initials:"D",verified:true,time:"2 dk",text:"DİDİ Sosyal Beta yayında! Açık/koyu tema, fotoğraf, video ve YouTube paylaşımı ilk sürümde aktif. #DİDİSocial",likes:128,comments:[{id:"c1",name:"Ayşe Yılmaz",initials:"AY",text:"Çok güzel görünüyor!"}],shares:17},
+ {id:"starter-2",owner:false,name:"DİDİ TV",user:"@diditv",initials:"DT",verified:true,time:"18 dk",text:"Yeni yayın teknolojileri ve DİDİ ekosistemi için çalışmalar devam ediyor.",media:{type:"youtube",id:"aqz-KE-bpKQ"},likes:89,comments:[],shares:8},
+ {id:"starter-3",owner:false,name:"Ayşe Yılmaz",user:"@ayseyilmaz",initials:"AY",time:"1 sa",text:"Bugün yeni sosyal platformu deniyorum. Tasarım oldukça hızlı ve temiz görünüyor! ✨",likes:42,comments:[],shares:2}
+];
+let posts=[...starterPosts];
+
+async function loadServerState(){
+  try{
+    const response=await fetch("/api/state");
+    const data=await response.json();
+    if(data.ok){
+      profile={...DEFAULT_PROFILE,...(data.profile||{})};
+      posts=Array.isArray(data.posts)&&data.posts.length?data.posts:[...starterPosts];
+    }
+  }catch(e){
+    notify("Sunucu verileri alınamadı; geçici görünüm açıldı.");
+  }
+}
+
+async function savePosts(){
+  try{
+    const response=await fetch("/api/state/posts",{
+      method:"PUT",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({posts})
+    });
+    const data=await response.json();
+    if(!data.ok)throw new Error(data.message||"Kayıt başarısız");
+  }catch(e){
+    notify("Gönderiler sunucuya kaydedilemedi.");
+  }
+}
+
+async function saveProfileToServer(){
+  try{
+    const response=await fetch("/api/state/profile",{
+      method:"PUT",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({profile})
+    });
+    const data=await response.json();
+    if(!data.ok)throw new Error(data.message||"Profil kaydedilemedi");
+  }catch(e){
+    notify("Profil sunucuya kaydedilemedi.");
+  }
+}
+function notify(text){
+  toast.textContent=text;toast.classList.add("show");
+  clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2400);
+}
+function escapeHTML(str=""){
+  return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+}
+function youtubeId(url){
+  const m=String(url).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+  return m?m[1]:null;
+}
+function mediaHTML(media){
+  if(!media)return "";
+  if(media.type==="image")return `<div class="post-media"><img src="${media.src}" alt="Gönderi görseli"></div>`;
+  if(media.type==="video")return `<div class="post-media"><video src="${media.src}" controls preload="metadata"></video></div>`;
+  if(media.type==="youtube")return `<div class="post-media"><iframe src="https://www.youtube.com/embed/${media.id}" allowfullscreen></iframe></div>`;
+  return "";
+}
+function commentHTML(c){
+  return `<div class="comment" data-comment-id="${c.id}">
+    <div class="avatar">${escapeHTML(c.initials||"MS")}</div>
+    <div class="comment-content"><b>${escapeHTML(c.name)}</b><p>${escapeHTML(c.text)}</p>
+    <div class="comment-tools"><button class="comment-like">Beğen</button><button class="comment-delete">Sil</button></div></div>
+  </div>`;
+}
+function createPostElement(post){
+  const article=document.createElement("article");
+  article.className="post";
+  article.dataset.id=post.id;
+  article.dataset.search=(post.text+" "+post.name+" "+post.user).toLocaleLowerCase("tr");
+  const comments=Array.isArray(post.comments)?post.comments:[];
+  article.innerHTML=`
+    <div class="post-head">
+      <div class="avatar">${escapeHTML(post.initials)}</div>
+      <div><b>${escapeHTML(post.name)} ${post.verified?'<span class="badge">●</span>':""}</b>
+      <div class="small">${escapeHTML(post.user)} · ${escapeHTML(post.time)}</div></div>
+      ${post.owner?`<div class="owner-menu">
+        <button class="more owner-toggle">•••</button>
+        <div class="owner-menu-box"><button class="edit-post">✏️ Düzenle</button><button class="delete-post danger">🗑️ Sil</button></div>
+      </div>`:`<button class="more">•••</button>`}
+    </div>
+    ${post.text?`<div class="post-body">${escapeHTML(post.text)}</div>`:""}
+    ${mediaHTML(post.media)}
+    <div class="post-stats"><span class="likes">${post.likes||0} beğeni</span><span><span class="comment-count">${comments.length}</span> yorum · ${post.shares||0} paylaşım</span></div>
+    <div class="post-actions">
+      <button class="like">❤️ <span>Beğen</span></button>
+      <button class="comment-toggle">💬 <span>Yorum</span></button>
+      <button class="share-post">🔁 <span>Paylaş</span></button>
+      <button class="save-post">🔖 <span>Kaydet</span></button>
+    </div>
+    <div class="comment-box">
+      <form class="comment-form"><input maxlength="500" placeholder="Yorum yaz..."><button>Gönder</button></form>
+      <div class="comment-list">${comments.map(commentHTML).join("")}</div>
+    </div>`;
+
+  article.querySelector(".like").onclick=e=>{
+    const btn=e.currentTarget;
+    post.liked=!post.liked;post.likes=(post.likes||0)+(post.liked?1:-1);
+    btn.classList.toggle("liked",post.liked);article.querySelector(".likes").textContent=post.likes+" beğeni";savePosts();
+  };
+  article.querySelector(".comment-toggle").onclick=()=>article.querySelector(".comment-box").classList.toggle("open");
+  article.querySelector(".share-post").onclick=async()=>{
+    const text=post.text||"DİDİ Sosyal gönderisi";
+    try{await navigator.clipboard.writeText(text);notify("Gönderi metni panoya kopyalandı.");}
+    catch(e){notify("Paylaşım hazırlandı.");}
+  };
+  article.querySelector(".save-post").onclick=e=>{e.currentTarget.classList.toggle("liked");notify(e.currentTarget.classList.contains("liked")?"Kaydedildi.":"Kayıttan çıkarıldı.");};
+
+  const form=article.querySelector(".comment-form");
+  form.onsubmit=e=>{
+    e.preventDefault();const input=form.querySelector("input"),text=input.value.trim();if(!text)return;
+    const c={id:"c-"+Date.now(),name:profile.name,initials:profile.initials,text};
+    post.comments=post.comments||[];post.comments.push(c);input.value="";
+    article.querySelector(".comment-list").insertAdjacentHTML("beforeend",commentHTML(c));
+    article.querySelector(".comment-count").textContent=post.comments.length;bindCommentButtons(article,post);savePosts();notify("Yorum eklendi.");
+  };
+  if(post.owner){
+    const menu=article.querySelector(".owner-menu-box");
+    article.querySelector(".owner-toggle").onclick=()=>menu.classList.toggle("open");
+    article.querySelector(".edit-post").onclick=()=>openPostEdit(post);
+    article.querySelector(".delete-post").onclick=()=>{
+      if(!confirm("Bu gönderi silinsin mi?"))return;
+      posts=posts.filter(p=>p.id!==post.id);savePosts();renderFeed();notify("Gönderi silindi.");
+    };
+  }
+  bindCommentButtons(article,post);
+  return article;
+}
+function bindCommentButtons(article,post){
+  article.querySelectorAll(".comment").forEach(el=>{
+    el.querySelector(".comment-like").onclick=e=>{
+      e.currentTarget.classList.toggle("liked");
+      e.currentTarget.textContent=e.currentTarget.classList.contains("liked")?"Beğenildi":"Beğen";
+    };
+    el.querySelector(".comment-delete").onclick=()=>{
+      const id=el.dataset.commentId;
+      post.comments=(post.comments||[]).filter(c=>c.id!==id);el.remove();
+      article.querySelector(".comment-count").textContent=post.comments.length;savePosts();notify("Yorum silindi.");
+    };
+  });
+}
+function renderFeed(){
+  feed.innerHTML="";
+  posts.forEach(p=>feed.appendChild(createPostElement(p)));
+  updateProfileView();
+}
+function clearPreview(){
+  selectedMedia=null;$("#mediaPreview").innerHTML="";$("#mediaPreview").style.display="none";
+  $("#imageInput").value="";$("#videoInput").value="";
+}
+function showPreview(html){
+  const p=$("#mediaPreview");p.innerHTML=html+'<button class="tool" id="removeMedia" style="margin-top:8px">✕ Kaldır</button>';
+  p.style.display="block";$("#removeMedia").onclick=clearPreview;
+}
+function openModal(id){$("#"+id).classList.add("open")}
+function closeModal(id){$("#"+id).classList.remove("open")}
+$$("[data-close]").forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
+$$(".modal-backdrop").forEach(m=>m.onclick=e=>{if(e.target===m)m.classList.remove("open")});
+
+$("#imageBtn").onclick=()=>$("#imageInput").click();
+$("#videoBtn").onclick=()=>$("#videoInput").click();
+$("#imageInput").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const reader=new FileReader();reader.onload=()=>{selectedMedia={type:"image",src:reader.result};showPreview(`<img src="${reader.result}">`)};reader.readAsDataURL(f);
+};
+$("#videoInput").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const url=URL.createObjectURL(f),v=document.createElement("video");
+  v.preload="metadata";v.onloadedmetadata=()=>{
+    if(v.duration>300){URL.revokeObjectURL(url);e.target.value="";notify("Video 5 dakikadan uzun olamaz.");return}
+    const reader=new FileReader();
+    reader.onload=()=>{selectedMedia={type:"video",src:reader.result};showPreview(`<video src="${reader.result}" controls></video>`)};
+    reader.readAsDataURL(f);
+  };v.onerror=()=>notify("Video dosyası okunamadı.");v.src=url;
+};
+$("#youtubeBtn").onclick=()=>{
+  const url=prompt("YouTube video bağlantısını yapıştırın:");if(!url)return;const id=youtubeId(url);
+  if(!id){notify("Geçerli bir YouTube bağlantısı girin.");return}
+  selectedMedia={type:"youtube",id};showPreview(`<div class="youtube-preview"><iframe src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe></div>`);
+};
+$("#publishBtn").onclick=()=>{
+  const text=$("#postText").value.trim();
+  if(!text&&!selectedMedia){notify("Gönderi metni veya medya ekleyin.");return}
+  const post={id:"p-"+Date.now(),owner:true,name:profile.name,user:profile.username,initials:profile.initials,time:"şimdi",text,media:selectedMedia,likes:0,comments:[],shares:0};
+  posts.unshift(post);savePosts();$("#postText").value="";clearPreview();renderFeed();notify("Gönderi yayınlandı.");
+};
+function openPostEdit(post){
+  editingPostId=post.id;$("#editPostText").value=post.text||"";openModal("editPostModal");
+}
+$("#savePostEditBtn").onclick=()=>{
+  const post=posts.find(p=>p.id===editingPostId);if(!post)return;
+  post.text=$("#editPostText").value.trim();savePosts();closeModal("editPostModal");renderFeed();notify("Gönderi güncellendi.");
+};
+$("#profileOpen").onclick=e=>{e.preventDefault();updateProfileView();openModal("profileModal")};
+$("#editProfileBtn").onclick=()=>{
+  $("#editName").value=profile.name;$("#editUsername").value=profile.username.replace(/^@/,"");
+  $("#editBio").value=profile.bio;$("#editLocation").value=profile.location;
+  closeModal("profileModal");openModal("profileEditModal");
+};
+$("#saveProfileBtn").onclick=()=>{
+  const name=$("#editName").value.trim()||DEFAULT_PROFILE.name;
+  const username=$("#editUsername").value.trim().replace(/\s+/g,"");
+  profile={name,username:"@"+(username||"mehmetsait"),bio:$("#editBio").value.trim(),location:$("#editLocation").value.trim(),initials:name.split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase()};
+  posts.forEach(p=>{if(p.owner){p.name=profile.name;p.user=profile.username;p.initials=profile.initials}});
+  saveProfileToServer();savePosts();closeModal("profileEditModal");updateProfileView();renderFeed();openModal("profileModal");notify("Profil güncellendi.");
+};
+function updateProfileView(){
+  $("#profileNameView").textContent=profile.name;$("#profileUserView").textContent=profile.username;
+  $("#profileBioView").textContent=profile.bio||"Biyografi eklenmedi.";
+  $("#profileLocationView").textContent="📍 "+(profile.location||"Konum belirtilmedi");
+  $("#profileAvatarLarge").textContent=profile.initials;
+  $("#postCount").textContent=posts.filter(p=>p.owner).length;
+  document.querySelectorAll(".profile-mini .avatar").forEach(x=>x.textContent=profile.initials);
+  const mini=$(".profile-mini div:nth-child(2)");if(mini)mini.innerHTML=`<b>${escapeHTML(profile.name)}</b><div class="small">${escapeHTML(profile.username)}</div>`;
+}
+$("#themeBtn").onclick=()=>{
+  const dark=document.documentElement.dataset.theme!=="dark";
+  document.documentElement.dataset.theme=dark?"dark":"light";
+  $("#themeBtn").textContent=dark?"☀️":"🌙";localStorage.setItem("didi_theme",dark?"dark":"light");
+};
+const theme=localStorage.getItem("didi_theme")||"light";
+document.documentElement.dataset.theme=theme;$("#themeBtn").textContent=theme==="dark"?"☀️":"🌙";
+$("#searchInput").oninput=e=>{
+  const q=e.target.value.toLocaleLowerCase("tr");
+  $$(".post").forEach(p=>p.classList.toggle("hidden",!p.dataset.search.includes(q)));
+};
+$$(".follow button").forEach(btn=>btn.onclick=()=>{
+  const active=btn.textContent==="Takip ediliyor";btn.textContent=active?"Takip":"Takip ediliyor";notify(active?"Takip bırakıldı.":"Hesap takip edildi.");
+});
+async function startApp(){
+  await loadServerState();
+  renderFeed();
+}
+startApp();
+</script>
+
+</body>
+</html>
