@@ -1,10 +1,10 @@
 [
   {
-    "id": "bc9b2036-a7c1-441a-8603-1bdc6ac30e79",
+    "id": "c7517382-a46c-453c-a3bc-114747ba8a27",
     "name": "DİDİ Sahibi",
     "username": "@owner",
     "email": "owner@didi.local",
-    "password": "$2a$10$1pPgPkgTa6uIuAsiTQ110OGUlInVyGL7MFRDLMFUJ882sLzarjRJ.",
+    "password": "$2a$10$vPJhqwkJO4c17TG7yMe9Y.zFsOU23rCCnaLLUTYkQ1UTgP9iDZtMC",
     "role": "OWNER",
     "active": true,
     "verified": true,
@@ -13,6 +13,10 @@
     "following": [],
     "saved": [],
     "blocked": [],
+    "friends": [],
+    "friendRequests": [],
+    "avatar": null,
+    "lastSeen": 1784998806993,
     "emailVerified": true,
     "verificationCode": null,
     "resetCode": null

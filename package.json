@@ -1,6 +1,6 @@
 {
   "name": "didi-sosyal-pro",
-  "version": "11.0.0",
+  "version": "12.0.0",
   "private": true,
   "description": "DİDİ Sosyal Pro - gelişmiş üyelik, mesaj, bildirim ve yönetim sistemi",
   "main": "server.js",
@@ -11,6 +11,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express": "^4.21.2",
-    "express-session": "^1.18.1"
+    "express-session": "^1.18.1",
+    "multer": "^1.4.5-lts.1"
   }
 }

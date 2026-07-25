@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DİDİ Sosyal Pro 11.0</title>
+<title>DİDİ Sosyal Pro 12.0</title>
 <style>
 :root{
   --bg:#eef3ff;--panel:#fff;--panel2:#f6f8ff;--text:#101828;--muted:#667085;
@@ -210,6 +210,22 @@ html[data-theme="dark"] .verify-banner{background:#302817;border-color:#745c21}
 .moderation-actions button.danger{border-color:#e59b9b;color:#c92a2a}
 .reset-link{border:0;background:transparent;color:var(--brand);padding:0;text-align:left;cursor:pointer}
 
+
+/* PRO 12 GELİŞTİRMELERİ */
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.online-dot{width:10px;height:10px;border-radius:50%;background:#21b15a;display:inline-block;margin-left:6px;box-shadow:0 0 0 2px var(--panel)}
+.friend-card{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--line);background:var(--panel2);border-radius:13px;margin-bottom:10px}
+.friend-card .actions{margin-left:auto;display:flex;gap:8px}
+.friend-card button{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 10px;border-radius:9px}
+.friend-card button.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.upload-progress{height:7px;background:var(--panel2);border-radius:99px;overflow:hidden;margin-top:8px;display:none}
+.upload-progress span{display:block;height:100%;width:0;background:var(--brand)}
+.account-grid{display:grid;gap:10px}
+.account-grid input{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:10px;padding:11px}
+.profile-avatar-edit{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.profile-avatar-edit .avatar{width:72px;height:72px}
+.presence-text{font-size:12px;color:var(--muted)}
+
 </style>
 </head>
 <body>
@@ -252,7 +268,7 @@ html[data-theme="dark"] .verify-banner{background:#302817;border-color:#745c21}
       <a href="#" id="videoOpen">📺 Video</a>
       <a href="#" id="messagesOpen">💬 Mesajlar</a>
       <a href="#" id="notificationsOpen">🔔 Bildirimler</a>
-      <a href="#" id="groupsOpen">👥 Gruplar</a>
+      <a href="#" id="friendsOpen">🤝 Arkadaşlar</a><a href="#" id="groupsOpen">👥 Gruplar</a>
       <a href="#" id="marketOpen">🛒 Marketplace</a>
       <a href="#" id="profileOpen">👤 Profil</a>
       <a href="#" id="settingsOpen">⚙️ Ayarlar</a>
@@ -382,6 +398,13 @@ html[data-theme="dark"] .verify-banner{background:#302817;border-color:#745c21}
     <div class="list-item"><b>Görünüm</b><p class="small">Açık ve koyu tema üst menüden değiştirilebilir.</p></div>
     <div class="list-item"><b>Gizlilik</b><p class="small">Hesap ve içerik güvenliği sunucu oturumu ile korunur.</p></div>
     <div class="list-item">
+      <b>Hesap Bilgileri</b>
+      <div class="account-grid" style="margin-top:10px">
+        <input id="accountEmail" type="email" placeholder="E-posta">
+        <button class="modal-save" id="saveAccountBtn">Hesabı Güncelle</button>
+      </div>
+    </div>
+    <div class="list-item">
       <b>Şifre Değiştir</b>
       <div class="security-box" style="margin-top:10px">
         <input id="oldPassword" type="password" placeholder="Mevcut şifre">
@@ -395,6 +418,20 @@ html[data-theme="dark"] .verify-banner{background:#302817;border-color:#745c21}
   </div>
 </aside>
 
+
+
+<aside id="friendsDrawer" class="panel-drawer">
+  <div class="drawer-head"><h3>Arkadaşlar</h3><button class="drawer-close" data-drawer-close="friendsDrawer">✕</button></div>
+  <div class="drawer-body">
+    <div class="field"><label>Kullanıcı ara</label><input id="friendSearchInput" placeholder="@kullanici"></div>
+    <button class="modal-save" id="friendSearchBtn" style="width:100%;margin-top:8px">Ara</button>
+    <div id="friendSearchResults" style="margin-top:14px"></div>
+    <h4>Gelen İstekler</h4>
+    <div id="friendRequests"></div>
+    <h4>Arkadaşlarım</h4>
+    <div id="friendsList"></div>
+  </div>
+</aside>
 
 <aside id="blockedDrawer" class="panel-drawer">
   <div class="drawer-head"><h3>Engellenen Kullanıcılar</h3><button class="drawer-close" data-drawer-close="blockedDrawer">✕</button></div>
@@ -422,6 +459,10 @@ html[data-theme="dark"] .verify-banner{background:#302817;border-color:#745c21}
   <div class="modal">
     <div class="modal-head"><h3>E-posta Doğrulama</h3><button data-close="verifyModal">✕</button></div>
     <div class="modal-body">
+      <div class="profile-avatar-edit">
+        <div class="avatar" id="profileAvatarEditPreview">D</div>
+        <div><button class="tool" id="changeAvatarBtn">Profil Fotoğrafı Seç</button><input id="avatarInput" type="file" accept="image/*" hidden><div class="upload-progress" id="avatarProgress"><span></span></div></div>
+      </div>
       <div class="field"><label>Doğrulama kodu</label><input id="verifyCode" maxlength="6" placeholder="6 haneli kod"></div>
       <button class="modal-save" id="confirmVerifyBtn">Doğrula</button>
     </div>
@@ -509,6 +550,10 @@ async function api(url,options={}){
   return data;
 }
 function initials(name="DİDİ"){return name.split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase()}
+function avatarHTML(userOrPost){
+  const src=userOrPost.avatar;
+  return src?`<img src="${src}" alt="">`:escapeHTML(userOrPost.initials||initials(userOrPost.name||"DİDİ"));
+}
 function youtubeId(url){const m=String(url).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);return m?m[1]:null}
 function mediaHTML(media){
   if(!media)return "";
@@ -521,7 +566,7 @@ function pollHTML(post){
   if(!post.poll||!Array.isArray(post.poll.options))return "";
   return `<div class="poll-box">${post.poll.question?`<b>${escapeHTML(post.poll.question)}</b>`:""}${post.poll.options.map((o,i)=>`<button class="poll-option" data-poll-index="${i}">${escapeHTML(o.text)} · ${o.votes||0} oy</button>`).join("")}</div>`;
 }
-function commentHTML(c){return `<div class="comment" data-comment-id="${c.id}"><div class="avatar">${escapeHTML(c.initials||"D")}</div><div class="comment-content"><b>${escapeHTML(c.name)}</b><p>${escapeHTML(c.text)}</p></div></div>`}
+function commentHTML(c){return `<div class="comment" data-comment-id="${c.id}"><div class="avatar">${avatarHTML(c)}</div><div class="comment-content"><b>${escapeHTML(c.name)}</b><p>${escapeHTML(c.text)}</p></div></div>`}
 
 function createPostElement(post){
   const article=document.createElement("article");
@@ -529,7 +574,7 @@ function createPostElement(post){
   article.dataset.search=((post.text||"")+" "+post.name+" "+post.user).toLocaleLowerCase("tr");
   const comments=post.comments||[];
   article.innerHTML=`
-    <div class="post-head"><div class="avatar">${escapeHTML(post.initials||initials(post.name))}</div>
+    <div class="post-head"><div class="avatar">${avatarHTML(post)}</div>
     <div><b>${escapeHTML(post.name)} ${post.verified?'<span class="badge">●</span>':""}</b><div class="small">${escapeHTML(post.user)} · ${escapeHTML(post.time||"şimdi")}</div></div>
     ${post.owner?`<div class="owner-menu"><button class="more owner-toggle">•••</button><div class="owner-menu-box"><button class="edit-post">✏️ Düzenle</button><button class="delete-post danger">🗑️ Sil</button></div></div>`:`<div class="owner-menu"><button class="more owner-toggle">•••</button><div class="owner-menu-box"><button class="report-post">🚩 Şikâyet Et</button><button class="block-user">⛔ Kullanıcıyı Engelle</button></div></div>`}</div>
     ${post.text?`<div class="post-body">${escapeHTML(post.text)}</div>`:""}${mediaHTML(post.media)}${pollHTML(post)}
@@ -563,10 +608,10 @@ function updateProfileView(){
   if(!profile)return;
   $("#profileNameView").textContent=profile.name;$("#profileUserView").textContent=profile.username;
   $("#profileBioView").textContent=profile.bio||"Biyografi eklenmedi.";$("#profileLocationView").textContent="📍 "+(profile.location||"Konum belirtilmedi");
-  $("#profileAvatarLarge").textContent=profile.initials||initials(profile.name);$("#postCount").textContent=posts.filter(p=>p.owner).length;
-  $$(".profile-mini .avatar").forEach(x=>x.textContent=profile.initials||initials(profile.name));
+  $("#profileAvatarLarge").innerHTML=profile.avatar?`<img src="${profile.avatar}">`:(profile.initials||initials(profile.name));$("#profileAvatarEditPreview").innerHTML=profile.avatar?`<img src="${profile.avatar}">`:(profile.initials||initials(profile.name));$("#postCount").textContent=posts.filter(p=>p.owner).length;
+  $$(".profile-mini .avatar").forEach(x=>x.innerHTML=profile.avatar?`<img src="${profile.avatar}">`:(profile.initials||initials(profile.name)));
   const mini=$(".profile-mini div:nth-child(2)");if(mini)mini.innerHTML=`<b>${escapeHTML(profile.name)}</b><div class="small">${escapeHTML(profile.username)}</div>`;
-  $$(".composer .avatar").forEach(x=>x.textContent=profile.initials||initials(profile.name));
+  $$(".composer .avatar").forEach(x=>x.innerHTML=profile.avatar?`<img src="${profile.avatar}">`:(profile.initials||initials(profile.name)));
 }
 function openModal(id){$("#"+id).classList.add("open")} function closeModal(id){$("#"+id).classList.remove("open")}
 $$("[data-close]").forEach(b=>b.onclick=()=>closeModal(b.dataset.close));$$(".modal-backdrop").forEach(m=>m.onclick=e=>{if(e.target===m)m.classList.remove("open")});
@@ -576,8 +621,8 @@ $$("[data-drawer-close]").forEach(b=>b.onclick=()=>$("#"+b.dataset.drawerClose).
 function clearPreview(){selectedMedia=null;selectedPoll=null;$("#mediaPreview").innerHTML="";$("#mediaPreview").style.display="none";$("#imageInput").value="";$("#videoInput").value=""}
 function showPreview(html){const p=$("#mediaPreview");p.innerHTML=html+'<button class="tool" id="removeMedia" style="margin-top:8px">✕ Kaldır</button>';p.style.display="block";$("#removeMedia").onclick=clearPreview}
 $("#imageBtn").onclick=()=>$("#imageInput").click();$("#videoBtn").onclick=()=>$("#videoInput").click();
-$("#imageInput").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{selectedMedia={type:"image",src:r.result};showPreview(`<img src="${r.result}">`)};r.readAsDataURL(f)};
-$("#videoInput").onchange=e=>{const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f),v=document.createElement("video");v.preload="metadata";v.onloadedmetadata=()=>{if(v.duration>300){notify("Video 5 dakikadan uzun olamaz.");return}const r=new FileReader();r.onload=()=>{selectedMedia={type:"video",src:r.result};showPreview(`<video src="${r.result}" controls></video>`)};r.readAsDataURL(f)};v.src=u};
+$("#imageInput").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const up=await uploadFile(f,"post");selectedMedia={type:"image",src:up.url};showPreview(`<img src="${up.url}">`)}catch(err){notify(err.message)}};
+$("#videoInput").onchange=e=>{const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f),v=document.createElement("video");v.preload="metadata";v.onloadedmetadata=async()=>{URL.revokeObjectURL(u);if(v.duration>300){notify("Video 5 dakikadan uzun olamaz.");return}try{const up=await uploadFile(f,"post");selectedMedia={type:"video",src:up.url};showPreview(`<video src="${up.url}" controls></video>`)}catch(err){notify(err.message)}};v.src=u};showPreview(`<video src="${r.result}" controls></video>`)};r.readAsDataURL(f)};v.src=u};
 $("#youtubeBtn").onclick=()=>{const url=prompt("YouTube video bağlantısını yapıştırın:");if(!url)return;const id=youtubeId(url);if(!id)return notify("Geçerli bağlantı girin.");selectedMedia={type:"youtube",id};showPreview(`<div class="youtube-preview"><iframe src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe></div>`)};
 $("#pollBtn").onclick=()=>{const q=prompt("Anket sorusu:");if(!q)return;const raw=prompt("Seçenekleri virgülle ayırın:");const opts=(raw||"").split(",").map(x=>x.trim()).filter(Boolean).slice(0,6);if(opts.length<2)return notify("En az iki seçenek girin.");selectedPoll={question:q,options:opts.map(text=>({text,votes:0}))};showPreview(`<b>${escapeHTML(q)}</b>${opts.map(x=>`<div class="list-item">${escapeHTML(x)}</div>`).join("")}`)};
 $("#publishBtn").onclick=async()=>{const text=$("#postText").value.trim();if(!text&&!selectedMedia&&!selectedPoll)return notify("İçerik ekleyin.");try{await api("/api/posts",{method:"POST",body:JSON.stringify({text,media:selectedMedia,poll:selectedPoll})});$("#postText").value="";clearPreview();await loadPosts();notify("Gönderi yayınlandı.")}catch(e){notify(e.message)}};
@@ -669,16 +714,13 @@ $("#changePasswordBtn").onclick=async()=>{
 };
 
 $("#addStoryCard").onclick=()=>$("#storyInput").click();
-$("#storyInput").onchange=e=>{
+$("#storyInput").onchange=async e=>{
   const f=e.target.files[0];if(!f)return;
-  const reader=new FileReader();
-  reader.onload=async()=>{
-    try{
-      await api("/api/stories",{method:"POST",body:JSON.stringify({type:f.type.startsWith("video/")?"video":"image",src:reader.result})});
-      notify("Hikâye eklendi.");await loadStories();
-    }catch(err){notify(err.message)}
-  };
-  reader.readAsDataURL(f);
+  try{
+    const up=await uploadFile(f,"story");
+    await api("/api/stories",{method:"POST",body:JSON.stringify({type:f.type.startsWith("video/")?"video":"image",src:up.url})});
+    notify("Hikâye eklendi.");await loadStories();
+  }catch(err){notify(err.message)}
 };
 async function loadStories(){
   const d=await api("/api/stories");
@@ -756,10 +798,50 @@ $("#confirmResetBtn").onclick=async()=>{
   }catch(e){notify(e.message)}
 };
 
+
+async function uploadFile(file,kind="media"){
+  const form=new FormData();form.append("file",file);
+  const res=await fetch(`/api/uploads?kind=${encodeURIComponent(kind)}`,{method:"POST",body:form});
+  const data=await res.json();if(!res.ok||data.ok===false)throw new Error(data.message||"Yükleme başarısız");return data;
+}
+
+$("#changeAvatarBtn").onclick=()=>$("#avatarInput").click();
+$("#avatarInput").onchange=async e=>{
+  const file=e.target.files[0];if(!file)return;
+  const bar=$("#avatarProgress"),fill=bar.querySelector("span");bar.style.display="block";fill.style.width="35%";
+  try{
+    const up=await uploadFile(file,"avatar");fill.style.width="75%";
+    const d=await api("/api/profile/avatar",{method:"PUT",body:JSON.stringify({avatar:up.url})});
+    profile=d.profile;fill.style.width="100%";updateProfileView();notify("Profil fotoğrafı güncellendi.");
+  }catch(err){notify(err.message)}finally{setTimeout(()=>{bar.style.display="none";fill.style.width="0"},500)}
+};
+
+async function loadFriends(){
+  const d=await api("/api/friends");
+  $("#friendRequests").innerHTML=(d.requests||[]).map(u=>`<div class="friend-card"><div class="avatar">${avatarHTML(u)}</div><div><b>${escapeHTML(u.name)}</b><div class="small">${escapeHTML(u.username)}</div></div><div class="actions"><button class="primary friend-accept" data-id="${u.id}">Kabul</button><button class="friend-reject" data-id="${u.id}">Reddet</button></div></div>`).join("")||'<div class="small">Bekleyen istek yok.</div>';
+  $("#friendsList").innerHTML=(d.friends||[]).map(u=>`<div class="friend-card"><div class="avatar">${avatarHTML(u)}</div><div><b>${escapeHTML(u.name)}${u.online?'<span class="online-dot"></span>':''}</b><div class="presence-text">${u.online?"Çevrim içi":"Çevrim dışı"}</div></div></div>`).join("")||'<div class="small">Henüz arkadaş yok.</div>';
+  $$(".friend-accept").forEach(b=>b.onclick=async()=>{await api(`/api/friends/${b.dataset.id}/accept`,{method:"POST"});await loadFriends()});
+  $$(".friend-reject").forEach(b=>b.onclick=async()=>{await api(`/api/friends/${b.dataset.id}/reject`,{method:"POST"});await loadFriends()});
+}
+$("#friendsOpen").onclick=async e=>{e.preventDefault();closeDrawers();openDrawer("friendsDrawer");await loadFriends()};
+$("#friendSearchBtn").onclick=async()=>{
+  const q=$("#friendSearchInput").value.trim();if(!q)return;
+  const d=await api("/api/friends/search?q="+encodeURIComponent(q));
+  $("#friendSearchResults").innerHTML=(d.users||[]).map(u=>`<div class="friend-card"><div class="avatar">${avatarHTML(u)}</div><div><b>${escapeHTML(u.name)}</b><div class="small">${escapeHTML(u.username)}</div></div><button class="primary friend-add" data-id="${u.id}">İstek Gönder</button></div>`).join("")||'<div class="small">Kullanıcı bulunamadı.</div>';
+  $$(".friend-add").forEach(b=>b.onclick=async()=>{await api(`/api/friends/${b.dataset.id}/request`,{method:"POST"});notify("Arkadaşlık isteği gönderildi.");b.disabled=true});
+};
+
+$("#saveAccountBtn").onclick=async()=>{
+  try{
+    const d=await api("/api/account",{method:"PUT",body:JSON.stringify({email:$("#accountEmail").value})});
+    currentUser=d.user;notify("Hesap bilgileri güncellendi.");
+  }catch(e){notify(e.message)}
+};
+
 async function boot(){
   try{
     const d=await api("/api/auth/me");
-    currentUser=d.user;profile=d.profile;if(!currentUser.verified)$("#verifyBanner").classList.remove("hidden");else $("#verifyBanner").classList.add("hidden");
+    currentUser=d.user;profile=d.profile;$("#accountEmail").value=currentUser.email||"";if(!currentUser.verified)$("#verifyBanner").classList.remove("hidden");else $("#verifyBanner").classList.add("hidden");
     $("#authGate").classList.add("hidden");$("#logoutBtn").classList.remove("hidden");
     if(currentUser.role==="OWNER"||currentUser.role==="ADMIN")$("#adminBtn").classList.remove("hidden");
     await loadPosts();await loadStories();await refreshBadges();
