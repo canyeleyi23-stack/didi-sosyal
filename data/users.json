@@ -1,0 +1,16 @@
+[
+  {
+    "id": "7ae06150-b988-41c6-99c9-19247500ad46",
+    "name": "DİDİ Sahibi",
+    "username": "@owner",
+    "email": "owner@didi.local",
+    "password": "$2a$10$Tva9yaCzXSO/kdXHtrGZK.5ecak2NyJTH2VBmbwQtWCig.5P4otnm",
+    "role": "OWNER",
+    "active": true,
+    "verified": true,
+    "bio": "DİDİ Sosyal platform sahibi.",
+    "location": "Türkiye",
+    "following": [],
+    "saved": []
+  }
+]

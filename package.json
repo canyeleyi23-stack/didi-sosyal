@@ -1,13 +1,16 @@
 {
   "name": "didi-sosyal-pro",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "private": true,
-  "description": "Gönderilen tasarımla aynı görünüme sahip DİDİ Sosyal Pro",
+  "description": "DİDİ Sosyal Pro - gelişmiş üyelik, mesaj, bildirim ve yönetim sistemi",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1"
   }
 }
