@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DİDİ Sosyal Pro 10.0</title>
+<title>DİDİ Sosyal Pro 11.0</title>
 <style>
 :root{
   --bg:#eef3ff;--panel:#fff;--panel2:#f6f8ff;--text:#101828;--muted:#667085;
@@ -191,6 +191,25 @@ html[data-theme="dark"] .auth-gate{background:linear-gradient(135deg,#06101f,#11
 .story-add-input{display:none}
 @media(max-width:760px){.reels-grid,.market-grid{grid-template-columns:1fr}}
 
+
+/* PRO 11 GELİŞTİRMELERİ */
+.search-results{position:absolute;top:58px;left:50%;transform:translateX(-50%);width:min(560px,calc(100vw - 24px));max-height:420px;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);z-index:350;display:none}
+.search-results.open{display:block}
+.search-result{padding:12px;border-bottom:1px solid var(--line);cursor:pointer}
+.search-result:last-child{border-bottom:0}
+.search-result:hover{background:var(--panel2)}
+.report-box{display:grid;gap:10px}
+.report-box select,.report-box textarea{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:10px;padding:11px}
+.blocked-row{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--line);background:var(--panel2);border-radius:11px;margin-bottom:9px}
+.verify-banner{background:linear-gradient(90deg,#fff4d8,#fff9ec);border:1px solid #f2ce76;border-radius:14px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+html[data-theme="dark"] .verify-banner{background:#302817;border-color:#745c21}
+.verify-banner button{border:0;background:#b7791f;color:#fff;padding:9px 12px;border-radius:9px;font-weight:700}
+.moderation-item{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:12px;margin-bottom:10px}
+.moderation-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.moderation-actions button{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 10px;border-radius:9px}
+.moderation-actions button.danger{border-color:#e59b9b;color:#c92a2a}
+.reset-link{border:0;background:transparent;color:var(--brand);padding:0;text-align:left;cursor:pointer}
+
 </style>
 </head>
 <body>
@@ -253,7 +272,7 @@ html[data-theme="dark"] .auth-gate{background:linear-gradient(135deg,#06101f,#11
       <div class="story"><div class="avatar">SK</div><div class="story-name">Selin Koç</div></div>
     </section>
 
-    <section class="composer">
+    <div id="verifyBanner" class="verify-banner hidden"><span>E-posta adresiniz doğrulanmadı.</span><button id="sendVerifyBtn">Doğrulama Kodu Gönder</button></div><section class="composer">
       <div class="composer-top">
         <div class="avatar">MS</div>
         <textarea id="postText" maxlength="2000" placeholder="Ne düşünüyorsun?"></textarea>
@@ -322,7 +341,7 @@ html[data-theme="dark"] .auth-gate{background:linear-gradient(135deg,#06101f,#11
     <form id="loginForm" class="auth-form">
       <input id="loginEmail" type="email" placeholder="E-posta" required>
       <input id="loginPassword" type="password" placeholder="Şifre" required>
-      <button>Giriş Yap</button>
+      <button>Giriş Yap</button><button type="button" id="forgotPasswordBtn" class="reset-link">Şifremi unuttum</button>
     </form>
     <form id="registerForm" class="auth-form hidden">
       <input id="registerName" placeholder="Ad Soyad" required>
@@ -371,9 +390,56 @@ html[data-theme="dark"] .auth-gate{background:linear-gradient(135deg,#06101f,#11
       </div>
     </div>
     <button class="modal-save" id="savedPostsBtn" style="width:100%;margin-bottom:10px">Kaydedilen Gönderiler</button>
+    <button class="modal-save" id="blockedUsersBtn" style="width:100%;margin-bottom:10px">Engellenen Kullanıcılar</button>
     <button class="modal-save" id="settingsLogout" style="width:100%">Oturumu Kapat</button>
   </div>
 </aside>
+
+
+<aside id="blockedDrawer" class="panel-drawer">
+  <div class="drawer-head"><h3>Engellenen Kullanıcılar</h3><button class="drawer-close" data-drawer-close="blockedDrawer">✕</button></div>
+  <div class="drawer-body" id="blockedList"></div>
+</aside>
+
+<div id="reportModal" class="modal-backdrop">
+  <div class="modal">
+    <div class="modal-head"><h3>Gönderiyi Şikâyet Et</h3><button data-close="reportModal">✕</button></div>
+    <div class="modal-body report-box">
+      <select id="reportReason">
+        <option value="spam">Spam</option>
+        <option value="abuse">Taciz veya hakaret</option>
+        <option value="violence">Şiddet içeriği</option>
+        <option value="copyright">Telif hakkı</option>
+        <option value="other">Diğer</option>
+      </select>
+      <textarea id="reportNote" rows="5" placeholder="Açıklama"></textarea>
+      <button class="modal-save" id="submitReportBtn">Şikâyeti Gönder</button>
+    </div>
+  </div>
+</div>
+
+<div id="verifyModal" class="modal-backdrop">
+  <div class="modal">
+    <div class="modal-head"><h3>E-posta Doğrulama</h3><button data-close="verifyModal">✕</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Doğrulama kodu</label><input id="verifyCode" maxlength="6" placeholder="6 haneli kod"></div>
+      <button class="modal-save" id="confirmVerifyBtn">Doğrula</button>
+    </div>
+  </div>
+</div>
+
+<div id="resetModal" class="modal-backdrop">
+  <div class="modal">
+    <div class="modal-head"><h3>Şifre Sıfırlama</h3><button data-close="resetModal">✕</button></div>
+    <div class="modal-body">
+      <div class="field"><label>E-posta</label><input id="resetEmail" type="email"></div>
+      <div class="field"><label>Sıfırlama kodu</label><input id="resetCode" maxlength="6"></div>
+      <div class="field"><label>Yeni şifre</label><input id="resetNewPassword" type="password" minlength="6"></div>
+      <button class="modal-save" id="requestResetBtn">Kod Gönder</button>
+      <button class="modal-save" id="confirmResetBtn" style="margin-top:8px">Şifreyi Yenile</button>
+    </div>
+  </div>
+</div>
 
 <div id="storyViewer" class="story-viewer"><div class="story-view-card"><button id="storyClose">✕</button><div><h2 id="storyTitle">Hikâye</h2><p id="storyText">DİDİ Sosyal hikâyesi</p></div></div></div>
 
@@ -465,7 +531,7 @@ function createPostElement(post){
   article.innerHTML=`
     <div class="post-head"><div class="avatar">${escapeHTML(post.initials||initials(post.name))}</div>
     <div><b>${escapeHTML(post.name)} ${post.verified?'<span class="badge">●</span>':""}</b><div class="small">${escapeHTML(post.user)} · ${escapeHTML(post.time||"şimdi")}</div></div>
-    ${post.owner?`<div class="owner-menu"><button class="more owner-toggle">•••</button><div class="owner-menu-box"><button class="edit-post">✏️ Düzenle</button><button class="delete-post danger">🗑️ Sil</button></div></div>`:`<button class="more">•••</button>`}</div>
+    ${post.owner?`<div class="owner-menu"><button class="more owner-toggle">•••</button><div class="owner-menu-box"><button class="edit-post">✏️ Düzenle</button><button class="delete-post danger">🗑️ Sil</button></div></div>`:`<div class="owner-menu"><button class="more owner-toggle">•••</button><div class="owner-menu-box"><button class="report-post">🚩 Şikâyet Et</button><button class="block-user">⛔ Kullanıcıyı Engelle</button></div></div>`}</div>
     ${post.text?`<div class="post-body">${escapeHTML(post.text)}</div>`:""}${mediaHTML(post.media)}${pollHTML(post)}
     <div class="post-stats"><span class="likes">${post.likes||0} beğeni</span><span><span class="comment-count">${comments.length}</span> yorum · ${post.shares||0} paylaşım</span></div>
     <div class="post-actions"><button class="like ${post.liked?"liked":""}">❤️ <span>Beğen</span></button><button class="comment-toggle">💬 <span>Yorum</span></button><button class="share-post">🔁 <span>Paylaş</span></button><button class="save-post ${post.saved?"liked":""}">🔖 <span>Kaydet</span></button></div>
@@ -477,6 +543,12 @@ function createPostElement(post){
   article.querySelector(".save-post").onclick=async()=>{try{await api(`/api/posts/${post.id}/save`,{method:"POST"});await loadPosts()}catch(e){notify(e.message)}};
   article.querySelector(".comment-form").onsubmit=async e=>{e.preventDefault();const input=e.currentTarget.querySelector("input");if(!input.value.trim())return;try{await api(`/api/posts/${post.id}/comments`,{method:"POST",body:JSON.stringify({text:input.value.trim()})});input.value="";await loadPosts()}catch(err){notify(err.message)}};
   article.querySelectorAll(".poll-option").forEach(b=>b.onclick=async()=>{try{await api(`/api/posts/${post.id}/poll`,{method:"POST",body:JSON.stringify({index:Number(b.dataset.pollIndex)})});await loadPosts()}catch(e){notify(e.message)}});
+  if(!post.owner){
+    const menu=article.querySelector(".owner-menu-box");
+    article.querySelector(".owner-toggle").onclick=()=>menu.classList.toggle("open");
+    article.querySelector(".report-post").onclick=()=>{reportPostId=post.id;menu.classList.remove("open");openModal("reportModal")};
+    article.querySelector(".block-user").onclick=async()=>{if(!confirm(`${post.name} engellensin mi?`))return;try{await api(`/api/users/${post.userId}/block`,{method:"POST"});await loadPosts();notify("Kullanıcı engellendi.")}catch(e){notify(e.message)}};
+  }
   if(post.owner){
     const menu=article.querySelector(".owner-menu-box");
     article.querySelector(".owner-toggle").onclick=()=>menu.classList.toggle("open");
@@ -538,7 +610,7 @@ $("#sendMessageBtn").onclick=async()=>{const to=$("#messageRecipient").value.tri
 
 $("#settingsOpen").onclick=e=>{e.preventDefault();closeDrawers();openDrawer("settingsDrawer")};
 
-async function loadAdmin(){const d=await api("/api/admin");$("#adminStats").innerHTML=Object.entries(d.stats).map(([k,v])=>`<div class="admin-stat"><span class="small">${escapeHTML(k)}</span><b>${v}</b></div>`).join("");$("#adminUsers").innerHTML=d.users.map(u=>`<div class="admin-card"><b>${escapeHTML(u.name)}</b><div class="small">${escapeHTML(u.username)} · ${escapeHTML(u.role)} · ${u.active?"Aktif":"Kapalı"}</div><button class="tool admin-toggle" data-id="${u.id}">${u.active?"Devre dışı bırak":"Etkinleştir"}</button></div>`).join("");$$(".admin-toggle").forEach(b=>b.onclick=async()=>{await api(`/api/admin/users/${b.dataset.id}/toggle`,{method:"POST"});await loadAdmin()})}
+async function loadAdmin(){const d=await api("/api/admin");$("#adminStats").innerHTML=Object.entries(d.stats).map(([k,v])=>`<div class="admin-stat"><span class="small">${escapeHTML(k)}</span><b>${v}</b></div>`).join("");$("#adminUsers").innerHTML=(d.reports||[]).map(r=>`<div class="moderation-item"><b>Şikâyet: ${escapeHTML(r.reason)}</b><div class="small">${escapeHTML(r.reporter)} · ${escapeHTML(r.time)}</div><p>${escapeHTML(r.note||"Açıklama yok")}</p><div class="moderation-actions"><button class="danger admin-delete-post" data-post="${r.postId}">Gönderiyi Sil</button></div></div>`).join("")+d.users.map(u=>`<div class="admin-card"><b>${escapeHTML(u.name)}</b><div class="small">${escapeHTML(u.username)} · ${escapeHTML(u.role)} · ${u.active?"Aktif":"Kapalı"}</div><button class="tool admin-toggle" data-id="${u.id}">${u.active?"Devre dışı bırak":"Etkinleştir"}</button></div>`).join("");$$(".admin-toggle").forEach(b=>b.onclick=async()=>{await api(`/api/admin/users/${b.dataset.id}/toggle`,{method:"POST"});await loadAdmin()});$$(".admin-delete-post").forEach(b=>b.onclick=async()=>{await api(`/api/posts/${b.dataset.post}`,{method:"DELETE"});await loadAdmin();await loadPosts()})}
 $("#adminBtn").onclick=async()=>{closeDrawers();openDrawer("adminDrawer");await loadAdmin()};
 
 $$(".story").forEach((s,i)=>s.onclick=()=>{if(i===0){notify("Hikâye yükleme sonraki medya seçiminden yapılabilir.");return}$("#storyTitle").textContent=s.querySelector(".story-name").textContent;$("#storyText").textContent="DİDİ Sosyal hikâyesi görüntüleniyor.";$("#storyViewer").classList.add("open")});
@@ -621,10 +693,73 @@ async function loadStories(){
   });
 }
 
+
+let reportPostId=null;
+
+async function runSearch(q){
+  const box=$("#searchResults");
+  if(!q.trim()){box.classList.remove("open");box.innerHTML="";return}
+  try{
+    const d=await api("/api/search?q="+encodeURIComponent(q.trim()));
+    const rows=[
+      ...(d.users||[]).map(u=>`<div class="search-result"><b>${escapeHTML(u.name)}</b><div class="small">${escapeHTML(u.username)}</div></div>`),
+      ...(d.posts||[]).map(p=>`<div class="search-result" data-post="${p.id}"><b>${escapeHTML(p.name)}</b><p>${escapeHTML((p.text||"").slice(0,100))}</p></div>`)
+    ];
+    box.innerHTML=rows.join("")||'<div class="search-result">Sonuç bulunamadı.</div>';
+    box.classList.add("open");
+    box.querySelectorAll("[data-post]").forEach(r=>r.onclick=()=>{showMainView("feed");box.classList.remove("open");const target=document.querySelector(`[data-id="${r.dataset.post}"]`);target?.scrollIntoView({behavior:"smooth",block:"center"})});
+  }catch{box.classList.remove("open")}
+}
+let searchTimer;
+$("#searchInput").oninput=e=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>runSearch(e.target.value),250)};
+document.addEventListener("click",e=>{if(!e.target.closest(".search"))$("#searchResults").classList.remove("open")});
+
+async function loadBlocked(){
+  const d=await api("/api/blocked");
+  $("#blockedList").innerHTML=(d.users||[]).map(u=>`<div class="blocked-row"><span><b>${escapeHTML(u.name)}</b><div class="small">${escapeHTML(u.username)}</div></span><button class="tool unblock-btn" data-id="${u.id}">Engeli Kaldır</button></div>`).join("")||'<div class="empty-state">Engellenmiş kullanıcı yok.</div>';
+  $$(".unblock-btn").forEach(b=>b.onclick=async()=>{await api(`/api/blocked/${b.dataset.id}`,{method:"DELETE"});await loadBlocked();await loadPosts()});
+}
+$("#blockedUsersBtn").onclick=async()=>{closeDrawers();openDrawer("blockedDrawer");await loadBlocked()};
+
+$("#submitReportBtn").onclick=async()=>{
+  try{
+    await api(`/api/posts/${reportPostId}/report`,{method:"POST",body:JSON.stringify({reason:$("#reportReason").value,note:$("#reportNote").value})});
+    closeModal("reportModal");$("#reportNote").value="";notify("Şikâyet yönetim ekibine gönderildi.");
+  }catch(e){notify(e.message)}
+};
+
+$("#sendVerifyBtn").onclick=async()=>{
+  try{
+    const d=await api("/api/account/verification/request",{method:"POST"});
+    openModal("verifyModal");
+    if(d.devCode)notify("Geliştirme kodu: "+d.devCode); else notify("Doğrulama kodu gönderildi.");
+  }catch(e){notify(e.message)}
+};
+$("#confirmVerifyBtn").onclick=async()=>{
+  try{
+    await api("/api/account/verification/confirm",{method:"POST",body:JSON.stringify({code:$("#verifyCode").value})});
+    closeModal("verifyModal");$("#verifyBanner").classList.add("hidden");notify("E-posta doğrulandı.");
+  }catch(e){notify(e.message)}
+};
+
+$("#forgotPasswordBtn").onclick=()=>openModal("resetModal");
+$("#requestResetBtn").onclick=async()=>{
+  try{
+    const d=await api("/api/auth/password-reset/request",{method:"POST",body:JSON.stringify({email:$("#resetEmail").value})});
+    if(d.devCode)notify("Geliştirme kodu: "+d.devCode); else notify("Sıfırlama kodu gönderildi.");
+  }catch(e){notify(e.message)}
+};
+$("#confirmResetBtn").onclick=async()=>{
+  try{
+    await api("/api/auth/password-reset/confirm",{method:"POST",body:JSON.stringify({email:$("#resetEmail").value,code:$("#resetCode").value,newPassword:$("#resetNewPassword").value})});
+    closeModal("resetModal");notify("Şifre yenilendi.");
+  }catch(e){notify(e.message)}
+};
+
 async function boot(){
   try{
     const d=await api("/api/auth/me");
-    currentUser=d.user;profile=d.profile;
+    currentUser=d.user;profile=d.profile;if(!currentUser.verified)$("#verifyBanner").classList.remove("hidden");else $("#verifyBanner").classList.add("hidden");
     $("#authGate").classList.add("hidden");$("#logoutBtn").classList.remove("hidden");
     if(currentUser.role==="OWNER"||currentUser.role==="ADMIN")$("#adminBtn").classList.remove("hidden");
     await loadPosts();await loadStories();await refreshBadges();

@@ -15,6 +15,7 @@ const NOTIFICATIONS=path.join(DATA,"notifications.json");
 const STORIES=path.join(DATA,"stories.json");
 const GROUPS=path.join(DATA,"groups.json");
 const MARKET=path.join(DATA,"market.json");
+const REPORTS=path.join(DATA,"reports.json");
 
 app.use(express.json({limit:"120mb"}));
 app.use(express.urlencoded({extended:true,limit:"120mb"}));
@@ -29,14 +30,14 @@ const read=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,"utf8"))
 const write=(file,data)=>{const tmp=file+".tmp";fs.writeFileSync(tmp,JSON.stringify(data,null,2),"utf8");fs.renameSync(tmp,file)};
 const id=()=>crypto.randomUUID();
 const now=()=>new Date().toLocaleString("tr-TR");
-const safeUser=u=>({id:u.id,name:u.name,username:u.username,email:u.email,role:u.role,active:u.active,verified:u.verified});
+const safeUser=u=>({id:u.id,name:u.name,username:u.username,email:u.email,role:u.role,active:u.active,verified:u.verified,emailVerified:!!u.emailVerified});
 const auth=(req,res,next)=>{const users=read(USERS,[]);const u=users.find(x=>x.id===req.session.userId&&x.active);if(!u)return res.status(401).json({ok:false,message:"Oturum açmalısınız."});req.user=u;next()};
 const admin=(req,res,next)=>{if(!["OWNER","ADMIN"].includes(req.user.role))return res.status(403).json({ok:false,message:"Yönetici yetkisi gerekli."});next()};
 function addNotification(userId,title,text){const all=read(NOTIFICATIONS,[]);all.unshift({id:id(),userId,title,text,time:now(),read:false});write(NOTIFICATIONS,all.slice(0,3000))}
 function seed(){
   let users=read(USERS,[]);
   if(!users.length){
-    users=[{id:id(),name:"DİDİ Sahibi",username:"@owner",email:"owner@didi.local",password:bcrypt.hashSync("Didi1234!",10),role:"OWNER",active:true,verified:true,bio:"DİDİ Sosyal platform sahibi.",location:"Türkiye",following:[],saved:[]}];
+    users=[{id:id(),name:"DİDİ Sahibi",username:"@owner",email:"owner@didi.local",password:bcrypt.hashSync("Didi1234!",10),role:"OWNER",active:true,verified:true,bio:"DİDİ Sosyal platform sahibi.",location:"Türkiye",following:[],saved:[],blocked:[],emailVerified:true,verificationCode:null,resetCode:null}];
     write(USERS,users);
   }
   if(!fs.existsSync(POSTS))write(POSTS,[
@@ -50,6 +51,7 @@ function seed(){
     {id:"g2",name:"DİDİ TV Topluluğu",initials:"TV",members:418,memberIds:[]},
     {id:"g3",name:"İçerik Üreticileri",initials:"İÜ",members:172,memberIds:[]}
   ]);
+  if(!fs.existsSync(REPORTS))write(REPORTS,[]);
   if(!fs.existsSync(MARKET))write(MARKET,[
     {id:"m1",title:"Profesyonel Mikrofon",price:"2.750 TL",location:"İstanbul",image:"https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=900&q=80"},
     {id:"m2",title:"Video Işık Seti",price:"1.450 TL",location:"Ankara",image:"https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=80"}
@@ -57,12 +59,12 @@ function seed(){
 }
 seed();
 
-app.get("/api/health",(_q,r)=>r.json({ok:true,name:"DİDİ Sosyal Pro",version:"10.0.0"}));
+app.get("/api/health",(_q,r)=>r.json({ok:true,name:"DİDİ Sosyal Pro",version:"11.0.0"}));
 app.post("/api/auth/register",async(req,res)=>{
   const name=String(req.body.name||"").trim(), username="@"+String(req.body.username||"").replace(/^@/,"").replace(/\s+/g,"").toLowerCase(), email=String(req.body.email||"").trim().toLowerCase(), password=String(req.body.password||"");
   if(!name||username==="@"||!email||password.length<6)return res.status(400).json({ok:false,message:"Bilgileri eksiksiz doldurun."});
   const users=read(USERS,[]);if(users.some(u=>u.email===email||u.username===username))return res.status(409).json({ok:false,message:"E-posta veya kullanıcı adı kullanılıyor."});
-  const u={id:id(),name,username,email,password:await bcrypt.hash(password,10),role:"USER",active:true,verified:false,bio:"",location:"Türkiye",following:[],saved:[]};
+  const u={id:id(),name,username,email,password:await bcrypt.hash(password,10),role:"USER",active:true,verified:false,bio:"",location:"Türkiye",following:[],saved:[],blocked:[],emailVerified:true,verificationCode:null,resetCode:null};
   users.push(u);write(USERS,users);req.session.userId=u.id;addNotification(u.id,"Hoş geldiniz","DİDİ Sosyal hesabınız oluşturuldu.");res.json({ok:true,user:safeUser(u)});
 });
 app.post("/api/auth/login",async(req,res)=>{
@@ -74,7 +76,7 @@ app.post("/api/auth/logout",(req,res)=>req.session.destroy(()=>res.json({ok:true
 app.get("/api/auth/me",auth,(req,res)=>res.json({ok:true,user:safeUser(req.user),profile:{name:req.user.name,username:req.user.username,initials:req.user.name.split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase(),bio:req.user.bio||"",location:req.user.location||""}}));
 
 app.get("/api/posts",auth,(req,res)=>{
-  const posts=read(POSTS,[]).map(p=>({...p,likes:(p.likesBy||[]).length,liked:(p.likesBy||[]).includes(req.user.id),saved:(req.user.saved||[]).includes(p.id),owner:p.userId===req.user.id||["OWNER","ADMIN"].includes(req.user.role)}));
+  const posts=read(POSTS,[]).filter(p=>!(req.user.blocked||[]).includes(p.userId)).map(p=>({...p,likes:(p.likesBy||[]).length,liked:(p.likesBy||[]).includes(req.user.id),saved:(req.user.saved||[]).includes(p.id),owner:p.userId===req.user.id||["OWNER","ADMIN"].includes(req.user.role)}));
   res.json({ok:true,posts});
 });
 app.post("/api/posts",auth,(req,res)=>{
@@ -96,6 +98,57 @@ app.get("/api/messages",auth,(req,res)=>{const all=read(MESSAGES,[]).filter(x=>x
 app.post("/api/messages",auth,(req,res)=>{const users=read(USERS,[]),target=users.find(x=>x.username===String(req.body.to||""));if(!target)return res.status(404).json({ok:false,message:"Alıcı bulunamadı."});const all=read(MESSAGES,[]);all.unshift({id:id(),fromId:req.user.id,toId:target.id,fromName:req.user.username,toName:target.username,text:String(req.body.text||"").slice(0,1000),time:now(),read:false});write(MESSAGES,all);addNotification(target.id,"Yeni mesaj",`${req.user.name} size mesaj gönderdi.`);res.json({ok:true})});
 app.get("/api/badges",auth,(req,res)=>{const n=read(NOTIFICATIONS,[]).filter(x=>x.userId===req.user.id&&!x.read).length,m=read(MESSAGES,[]).filter(x=>x.toId===req.user.id&&!x.read).length;res.json({ok:true,notifications:n,messages:m})});
 
+
+
+app.get("/api/search",auth,(req,res)=>{
+  const q=String(req.query.q||"").trim().toLocaleLowerCase("tr");
+  if(!q)return res.json({ok:true,users:[],posts:[]});
+  const blocked=req.user.blocked||[];
+  const users=read(USERS,[]).filter(u=>u.active&&u.id!==req.user.id&&!blocked.includes(u.id)&&(u.name+" "+u.username).toLocaleLowerCase("tr").includes(q)).slice(0,10).map(safeUser);
+  const posts=read(POSTS,[]).filter(p=>!blocked.includes(p.userId)&&((p.text||"")+" "+p.name+" "+p.user).toLocaleLowerCase("tr").includes(q)).slice(0,15);
+  res.json({ok:true,users,posts});
+});
+app.post("/api/users/:id/block",auth,(req,res)=>{
+  if(req.params.id===req.user.id)return res.status(400).json({ok:false,message:"Kendinizi engelleyemezsiniz."});
+  const users=read(USERS,[]),u=users.find(x=>x.id===req.user.id),target=users.find(x=>x.id===req.params.id);
+  if(!target)return res.status(404).json({ok:false,message:"Kullanıcı bulunamadı."});
+  u.blocked=u.blocked||[];if(!u.blocked.includes(target.id))u.blocked.push(target.id);
+  u.following=(u.following||[]).filter(x=>x!==target.id);write(USERS,users);res.json({ok:true});
+});
+app.get("/api/blocked",auth,(req,res)=>{
+  const users=read(USERS,[]),ids=req.user.blocked||[];
+  res.json({ok:true,users:users.filter(u=>ids.includes(u.id)).map(safeUser)});
+});
+app.delete("/api/blocked/:id",auth,(req,res)=>{
+  const users=read(USERS,[]),u=users.find(x=>x.id===req.user.id);u.blocked=(u.blocked||[]).filter(x=>x!==req.params.id);write(USERS,users);res.json({ok:true});
+});
+app.post("/api/posts/:id/report",auth,(req,res)=>{
+  const posts=read(POSTS,[]),p=posts.find(x=>x.id===req.params.id);
+  if(!p)return res.status(404).json({ok:false,message:"Gönderi bulunamadı."});
+  const all=read(REPORTS,[]);all.unshift({id:id(),postId:p.id,postOwnerId:p.userId,reporterId:req.user.id,reporter:req.user.username,reason:String(req.body.reason||"other"),note:String(req.body.note||"").slice(0,1000),status:"OPEN",time:now()});write(REPORTS,all);res.json({ok:true});
+});
+app.post("/api/account/verification/request",auth,(req,res)=>{
+  const users=read(USERS,[]),u=users.find(x=>x.id===req.user.id);
+  const code=String(Math.floor(100000+Math.random()*900000));u.verificationCode=code;write(USERS,users);
+  res.json({ok:true,devCode:process.env.NODE_ENV==="production"?undefined:code});
+});
+app.post("/api/account/verification/confirm",auth,(req,res)=>{
+  const users=read(USERS,[]),u=users.find(x=>x.id===req.user.id);
+  if(!u.verificationCode||u.verificationCode!==String(req.body.code||""))return res.status(400).json({ok:false,message:"Doğrulama kodu geçersiz."});
+  u.emailVerified=true;u.verificationCode=null;write(USERS,users);res.json({ok:true});
+});
+app.post("/api/auth/password-reset/request",(req,res)=>{
+  const users=read(USERS,[]),u=users.find(x=>x.email===String(req.body.email||"").toLowerCase());
+  if(!u)return res.json({ok:true});
+  const code=String(Math.floor(100000+Math.random()*900000));u.resetCode=code;u.resetExpires=Date.now()+15*60*1000;write(USERS,users);
+  res.json({ok:true,devCode:process.env.NODE_ENV==="production"?undefined:code});
+});
+app.post("/api/auth/password-reset/confirm",async(req,res)=>{
+  const users=read(USERS,[]),u=users.find(x=>x.email===String(req.body.email||"").toLowerCase());
+  if(!u||u.resetCode!==String(req.body.code||"")||!u.resetExpires||u.resetExpires<Date.now())return res.status(400).json({ok:false,message:"Kod geçersiz veya süresi dolmuş."});
+  const next=String(req.body.newPassword||"");if(next.length<6)return res.status(400).json({ok:false,message:"Şifre en az 6 karakter olmalı."});
+  u.password=await bcrypt.hash(next,10);u.resetCode=null;u.resetExpires=null;write(USERS,users);res.json({ok:true});
+});
 
 app.put("/api/account/password",auth,async(req,res)=>{
   const users=read(USERS,[]),u=users.find(x=>x.id===req.user.id);
@@ -131,9 +184,9 @@ app.post("/api/groups/:id/join",auth,(req,res)=>{
 });
 app.get("/api/market",auth,(req,res)=>res.json({ok:true,items:read(MARKET,[])}));
 
-app.get("/api/admin",auth,admin,(req,res)=>{const users=read(USERS,[]),posts=read(POSTS,[]),messages=read(MESSAGES,[]);res.json({ok:true,stats:{"Üyeler":users.length,"Gönderiler":posts.length,"Mesajlar":messages.length,"Aktif kullanıcı":users.filter(x=>x.active).length},users:users.map(safeUser)})});
+app.get("/api/admin",auth,admin,(req,res)=>{const users=read(USERS,[]),posts=read(POSTS,[]),messages=read(MESSAGES,[]);res.json({ok:true,stats:{"Üyeler":users.length,"Gönderiler":posts.length,"Mesajlar":messages.length,"Aktif kullanıcı":users.filter(x=>x.active).length,"Açık şikâyet":read(REPORTS,[]).filter(x=>x.status==="OPEN").length},users:users.map(safeUser),reports:read(REPORTS,[])})});
 app.post("/api/admin/users/:id/toggle",auth,admin,(req,res)=>{const users=read(USERS,[]),u=users.find(x=>x.id===req.params.id);if(!u)return res.status(404).json({ok:false,message:"Kullanıcı bulunamadı."});if(u.role==="OWNER")return res.status(400).json({ok:false,message:"Sahip hesabı kapatılamaz."});u.active=!u.active;write(USERS,users);res.json({ok:true})});
 
 app.get("*",(_q,r)=>r.sendFile(path.join(__dirname,"public","index.html")));
 app.use((e,_q,r,_n)=>r.status(500).json({ok:false,message:e.message||"Sunucu hatası"}));
-app.listen(PORT,"0.0.0.0",()=>console.log(`DİDİ Sosyal Pro 10.0: http://localhost:${PORT}`));
+app.listen(PORT,"0.0.0.0",()=>console.log(`DİDİ Sosyal Pro 11.0: http://localhost:${PORT}`));

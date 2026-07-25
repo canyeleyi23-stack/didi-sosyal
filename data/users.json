@@ -1,16 +1,20 @@
 [
   {
-    "id": "c2b91446-ce57-4f0f-b354-20b183e0949d",
+    "id": "bc9b2036-a7c1-441a-8603-1bdc6ac30e79",
     "name": "DİDİ Sahibi",
     "username": "@owner",
     "email": "owner@didi.local",
-    "password": "$2a$10$bSFCsvRWh23gITJ/IL7Du.zERKMq.5PiC5zVJEVTpCPSVaimPJiVa",
+    "password": "$2a$10$1pPgPkgTa6uIuAsiTQ110OGUlInVyGL7MFRDLMFUJ882sLzarjRJ.",
     "role": "OWNER",
     "active": true,
     "verified": true,
     "bio": "DİDİ Sosyal platform sahibi.",
     "location": "Türkiye",
     "following": [],
-    "saved": []
+    "saved": [],
+    "blocked": [],
+    "emailVerified": true,
+    "verificationCode": null,
+    "resetCode": null
   }
 ]
