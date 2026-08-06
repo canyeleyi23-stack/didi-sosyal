@@ -1,14 +1,9 @@
 services:
   - type: web
-    name: didi-sosyal
+    name: didi-sosyal-tam-site
     runtime: node
     plan: free
     buildCommand: npm install
     startCommand: node server.js
     healthCheckPath: /api/health
     autoDeploy: true
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: SESSION_SECRET
-        generateValue: true

@@ -1,0 +1,17 @@
+DİDİ SOSYAL TAM SİTE — SAYFA BULUNAMADI DÜZELTMESİ
+
+Bu sürümde ana site server.js içine de gömülüdür.
+public/index.html eksik yüklenmiş olsa bile ana sayfa açılır.
+
+GitHub'a ZIP içindeki TÜM dosyaları yükleyin.
+
+Render:
+Root Directory: boş
+Build Command: npm install
+Start Command: node server.js
+Health Check Path: /api/health
+
+GitHub'daki server.js dosyasının ilk satırı:
+ // DIDI_SOCIAL_FULL_SITE_PAGE_FIX
+
+Render'da Manual Deploy > Clear build cache & deploy seçin.

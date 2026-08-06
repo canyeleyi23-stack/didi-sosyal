@@ -1,8 +1,8 @@
 {
-  "name": "didi-sosyal-beta",
-  "version": "1.3.4-render-final",
+  "name": "didi-sosyal-beta-render-final",
+  "version": "1.0.0-beta.1",
   "private": true,
-  "description": "DİDİ Sosyal Render kesin düzeltme",
+  "description": "DİDİ Sosyal Beta - Render uyumlu tam site",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
