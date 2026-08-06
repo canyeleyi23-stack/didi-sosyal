@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: didi-sosyal-beta
+    name: didi-sosyal
     runtime: node
     plan: free
     buildCommand: npm install
@@ -8,19 +8,7 @@ services:
     healthCheckPath: /api/health
     autoDeploy: true
     envVars:
-      - key: NODE_VERSION
-        value: 22
       - key: NODE_ENV
         value: production
-      - key: DATA_DIR
-        value: /tmp/didi-sosyal-data
-      - key: BACKUP_DIR
-        value: /tmp/didi-sosyal-backups
-      - key: DIDI_ADMIN_USERNAME
-        value: didiadmin
-      - key: DIDI_ADMIN_EMAIL
-        sync: false
-      - key: DIDI_ADMIN_PASSWORD
-        sync: false
-      - key: STATUS_MESSAGE
-        value: DİDİ Sosyal Beta çalışıyor
+      - key: SESSION_SECRET
+        generateValue: true

@@ -1,21 +1,20 @@
-DİDİ SOSYAL BETA 1.3.1 - RENDER KURULUMU
+DİDİ SOSYAL — RENDER KURULUMU
 
-Render Web Service ayarları:
+GitHub'a bu ZIP içindeki tüm dosyaları yükleyin.
+
+Render ayarları:
+Language: Node
 Root Directory: boş
 Build Command: npm install
 Start Command: npm start
 Health Check Path: /api/health
 
-Environment Variables:
+Environment:
 NODE_ENV=production
-DATA_DIR=/tmp/didi-sosyal-data
-BACKUP_DIR=/tmp/didi-sosyal-backups
-DIDI_ADMIN_USERNAME=didiadmin
-DIDI_ADMIN_EMAIL=kendi_epostan
-DIDI_ADMIN_PASSWORD=yalnizca_Render_Environment_bolumune_yazilan_guclu_sifre
+SESSION_SECRET=Render içinden Generate kullanın
 
 ÖNEMLİ:
-- Yönetici şifresini GitHub dosyalarına yazmayın.
-- Render Free servisinin dosya sistemi geçicidir; yeniden dağıtımda kullanıcı verileri sıfırlanabilir.
-- Kalıcı gerçek kullanım için PostgreSQL veya ücretli persistent disk gerekir.
-- GitHub'a bu paketin İÇİNDEKİ dosyaları yükleyin; üstte fazladan klasör bırakmayın.
+- Yeni Web Service oluştururken Docker değil Node seçin.
+- Start Command alanına node src/server.js yazmayın.
+- Doğru başlangıç dosyası: src/server.js
+- package.json içindeki npm start komutu otomatik olarak doğru dosyayı başlatır.
