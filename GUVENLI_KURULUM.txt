@@ -1,0 +1,10 @@
+DİDİ SOSYAL BETA 1.3 GÜVENLİ KURULUM
+
+1. ZIP dosyasını tamamen çıkartın.
+2. BASLAT.bat dosyasına çift tıklayın.
+3. İlk çalıştırmada yönetici kullanıcı adını ve şifresini belirleyin.
+4. Şifre yazılırken ekranda görünmez.
+5. Şifre README, konsol, giriş ekranı veya kaynak dosyalara yazılmaz.
+6. Şifre veritabanında yalnızca PBKDF2 hash olarak saklanır.
+7. Daha sonra değiştirmek için ADMIN_SIFRE_DEGISTIR.bat kullanın.
+8. Tarayıcı doğru localhost adresinde otomatik açılır.
