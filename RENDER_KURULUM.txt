@@ -1,20 +1,17 @@
-DİDİ SOSYAL — RENDER KURULUMU
+DİDİ SOSYAL RENDER KESİN FIX
 
-GitHub'a bu ZIP içindeki tüm dosyaları yükleyin.
+GitHub ana dizininde server.js dosyasını görmelisiniz.
 
-Render ayarları:
-Language: Node
-Root Directory: boş
-Build Command: npm install
-Start Command: npm start
-Health Check Path: /api/health
+Render:
+Language = Node
+Root Directory = BOŞ
+Build Command = npm install
+Start Command = node server.js
+Health Check Path = /api/health
 
 Environment:
-NODE_ENV=production
-SESSION_SECRET=Render içinden Generate kullanın
+NODE_ENV = production
+SESSION_SECRET = Generate
 
-ÖNEMLİ:
-- Yeni Web Service oluştururken Docker değil Node seçin.
-- Start Command alanına node src/server.js yazmayın.
-- Doğru başlangıç dosyası: src/server.js
-- package.json içindeki npm start komutu otomatik olarak doğru dosyayı başlatır.
+ÖNEMLİ: Render başlangıcında src/server.js YAZMAYIN.
+Bu paket kökteki server.js ile başlar.
