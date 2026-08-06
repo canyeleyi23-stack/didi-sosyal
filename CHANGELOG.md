@@ -1,9 +1,9 @@
-# DİDİ Sosyal Beta 1.3
+# DİDİ Sosyal Beta 1.3.1
 
-- Açılışta DİDİ logo/splash ekranı geri eklendi.
-- Yönetici şifresi giriş ekranından, konsoldan ve belgelerden kaldırıldı.
-- Kaynak kodda sabit yönetici şifresi tutulmaz.
-- İlk çalıştırmada PowerShell güvenli giriş alanıyla yönetici şifresi belirlenir.
-- Şifre yalnızca PBKDF2 hash biçiminde veritabanında saklanır.
-- ADMIN_SIFRE_DEGISTIR.bat eklendi.
-- Otomatik port seçimi ve tarayıcı açılışı korundu.
+- Render için doğru başlangıç komutu eklendi.
+- Harici npm bağımlılığı gerektirmeyen mevcut Node.js mimarisi doğrulandı.
+- Yönetici hesabı Render gizli ortam değişkenlerinden kurulur.
+- Yönetici şifresi GitHub veya arayüz içinde gösterilmez.
+- Render ücretsiz Web Service yapılandırması eklendi.
+- DİDİ Sosyal kurumsal logosu açılış, giriş ve üst menüye eklendi.
+- Sağlık kontrolü `/api/health` olarak hazırlandı.
