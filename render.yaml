@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: didi-sosyal-tam-site
+    name: didi-sosyal-beta
     runtime: node
     plan: free
     buildCommand: npm install

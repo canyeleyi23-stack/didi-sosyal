@@ -1,0 +1,20 @@
+DİDİ SOSYAL BETA 1.1 — GİRİŞ DÜZELTMESİ
+
+Yapılanlar:
+- Eski tarayıcı verileri otomatik onarılır.
+- Kullanıcı adı veya e-posta ile giriş yapılır.
+- Eski yönetici adları yeni hesaba yönlendirilir.
+- Şifre göster/gizle düğmesi eklendi.
+- Giriş verilerini onar düğmesi eklendi.
+- Yönetici bilgileri giriş ekranında gösterilmez.
+- Ana sayfa server.js içine yedeklendi.
+
+Render:
+Root Directory: boş
+Build Command: npm install
+Start Command: node server.js
+Health Check Path: /api/health
+
+Giriş sorununda:
+1. Giriş verilerini onar düğmesine basın.
+2. Yönetici kullanıcı adını ve şifresini girin.
